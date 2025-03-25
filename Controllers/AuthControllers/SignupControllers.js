@@ -3,7 +3,6 @@ import pool from "../../Databaseconnection/DBConnection.js";
 export const CreateUser = async (req, res, next) => {
     try {
         const { newUserData } = req.body;
-        console.log(newUserData);
         
         const result = await pool.query(
             `INSERT INTO users (name, email, phone, street, city, country, postal_code , password) 
