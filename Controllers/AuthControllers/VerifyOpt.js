@@ -7,6 +7,7 @@ export const VerifyOtp = (req , res , next) => {
             if(result == true)
             {
                 res.status(200).json({success : true})
+                return next()
             }
             else
             {

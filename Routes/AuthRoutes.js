@@ -10,6 +10,6 @@ const router = express.Router();
 router.post('/Signup' , CreateUser)
 router.post('/Checkuser' , CheckUser)
 router.post('/OTPgenerate' , GenerateOtp)
-router.post('/VerifyOtp' , VerifyOtp )
+router.post('/VerifyOtp' , VerifyOtp)
 
 export default router
