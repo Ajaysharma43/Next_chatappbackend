@@ -28,7 +28,7 @@ export const CreateUser = async (req, res, next) => {
         return res.status(500).json({
             success: false,
             message: "Internal server error. Please try again later.",
-            error: error.message,
+            error: error.detail,
         });
     }
 };
