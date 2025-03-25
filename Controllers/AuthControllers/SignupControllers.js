@@ -2,13 +2,14 @@ import pool from "../../Databaseconnection/DBConnection.js";
 
 export const CreateUser = async (req, res, next) => {
     try {
-        const { formData } = req.body;
-
+        const { newUserData } = req.body;
+        console.log(newUserData);
+        
         const result = await pool.query(
-            `INSERT INTO users (name, email, phone, street, city, country, postal_code) 
-             VALUES ($1, $2, $3, $4, $5, $6, $7) 
+            `INSERT INTO users (name, email, phone, street, city, country, postal_code , password) 
+             VALUES ($1, $2, $3, $4, $5, $6, $7 , $8) 
              RETURNING *`,
-            [formData.name, formData.email, formData.phone, formData.street, formData.city, formData.country, formData.postalCode]
+            [newUserData.name, newUserData.email, newUserData.phone, newUserData.street, newUserData.city, newUserData.country, newUserData.postalCode , newUserData.password]
         );
 
         if (result.rows.length > 0) {
