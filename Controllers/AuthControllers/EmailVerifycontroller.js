@@ -1,10 +1,12 @@
+import pool from "../../Databaseconnection/DBConnection.js";
+
 export const CheckUser = async (req, res, next) => {
     try {
-        const { Email } = req.body;
-
+        const { email } = req.body;
+        
         const existed = await pool.query(
             `SELECT * FROM users WHERE email = $1`,
-            [Email]
+            [email]
         );
 
         if (existed.rowCount > 0) {

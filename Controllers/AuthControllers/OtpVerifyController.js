@@ -22,7 +22,7 @@ export const GenerateOtp = async (req, res, next) => {
         const saltRounds = 10;
         const EncryptedOtp = await bcrypt.hash(OTP, saltRounds);
 
-        return res.status(200).json({ OTP: EncryptedOtp });
+        return res.status(200).json({ OTP: EncryptedOtp  , success : true});
     } catch (error) {
         res.status(404).json({error : error}) 
     }
