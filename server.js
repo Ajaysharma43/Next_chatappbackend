@@ -17,26 +17,23 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: '*', // Update this to your frontend domain in production
+    origin: '*',
     methods: ['GET', 'POST'],
   },
 });
 
 
-// Middleware
 app.use(express.json());
 app.use(cors());
 
 app.use('/Auth' , AuthRouter)
 
-// Routes
 app.get('/', (req, res) => {
   res.send('Welcome to the Express.js server with Socket.IO!');
 });
 
 Socketconnection(io)
 
-// Start the server
 server.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
