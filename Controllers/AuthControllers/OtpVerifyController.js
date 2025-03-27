@@ -1,5 +1,8 @@
 import twilio from "twilio";
 import bcrypt from "bcrypt";
+import dotenv from 'dotenv'
+
+dotenv.config()
 
 const client = twilio(process.env.TWILIO_ACCESS_TOKEN, process.env.TWILIO_AUTH_TOKEN);
 
@@ -11,7 +14,6 @@ export const GenerateOtp = async (req, res, next) => {
         }
 
         const OTP = Math.floor(100000 + Math.random() * 900000).toString();
-
         await client.messages.create({
             body: `Your OTP is: ${OTP}`,
             from: process.env.TWILIO_NUMBER,
