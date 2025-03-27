@@ -47,21 +47,19 @@ export const GenerateToken = async (req, res, next) => {
 
         const existed = Validate.rows.find((item) => item.email === formData.email)
         if (existed) {
-            bcrypt.compare(formData.password , existed.password , (err , result) => {
-                if(result == true)
-                {
+            await bcrypt.compare(formData.password, existed.password, (err, result) => {
+                if (result == true) {
                     const payload = { id: existed.id }
                     const AccessToken = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '2h' })
                     const RefreshToken = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '7d' })
-        
+
                     res.status(200).json({ message: "Login successfully", AccessToken: AccessToken, RefreshToken: RefreshToken, success: true })
                 }
-                else
-                {
+                else {
                     res.status(404).json({ message: "login unsuccessfull" })
                 }
             })
-            
+
         }
         else {
             res.status(404).json({ message: "login unsuccessfull" })
