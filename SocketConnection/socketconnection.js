@@ -1,4 +1,4 @@
-import { AddChat, RetriveChats } from "../Controllers/SocketControllers/SocketControllers.js";
+import { AddChat, DeleteChat, RetriveChats } from "../Controllers/SocketControllers/SocketControllers.js";
 
 const Socketconnection = (io) => {
 
@@ -10,12 +10,21 @@ io.on('connection', async (socket) => {
     socket.emit('connection', { message: 'Welcome to the server!' });
   
     
-    socket.on('message', (data) => {
-      AddChat(data)
-      console.log('Message received:', data);
+    socket.on('message', async (data) => {
+      const Updatedmessages = await AddChat(data)
+      console.log('Message received:', Updatedmessages);
       
-      io.emit('response', { message: data });
+      io.emit('response', { message: Updatedmessages });
     });
+
+    socket.on('typing' , (user) => {
+      socket.broadcast.emit('userTyping' , (user))
+    })
+
+    socket.on('deleteMessage' , async (id) => {
+      const UpdatedData = await DeleteChat(id)
+      io.emit('GetUpdatedChats' , {UpdatedData})
+    })
   
     socket.on('disconnect', () => {
       console.log('A user disconnected:', socket.id);
