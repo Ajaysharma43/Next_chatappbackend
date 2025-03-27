@@ -8,7 +8,7 @@ export const AddChat = async (chat) => {
     const chats = await pool.query(`
             SELECT * from messages 
             `)
-            return chats.rows
+    return chats.rows
 }
 
 export const RetriveChats = async () => {
