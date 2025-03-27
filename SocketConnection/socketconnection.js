@@ -21,6 +21,10 @@ io.on('connection', async (socket) => {
       socket.broadcast.emit('userTyping' , (user))
     })
 
+    socket.on('stoppedtyping' , (user) =>{
+      socket.broadcast.emit('userStoppedTyping' , (user))
+    })
+
     socket.on('deleteMessage' , async (id) => {
       const UpdatedData = await DeleteChat(id)
       io.emit('GetUpdatedChats' , {UpdatedData})
