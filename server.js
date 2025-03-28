@@ -4,6 +4,7 @@ import { Server } from 'socket.io';
 import cors from 'cors';
 import Socketconnection from './SocketConnection/socketconnection.js';
 import AuthRouter from './Routes/AuthRoutes.js'
+import NavRoutes from './Routes/NavRoutes.js'
 import env from 'dotenv'
 
 
@@ -26,11 +27,9 @@ const io = new Server(server, {
 app.use(express.json());
 app.use(cors());
 
-app.use('/Auth' , AuthRouter)
+app.use('/Auth', AuthRouter)
+app.use('/Nav', NavRoutes)
 
-app.get('/', (req, res) => {
-  res.send('Welcome to the Express.js server with Socket.IO!');
-});
 
 Socketconnection(io)
 
