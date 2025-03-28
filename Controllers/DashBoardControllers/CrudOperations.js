@@ -18,3 +18,11 @@ export const FindUser = async (req, res, next) => {
         res.status(404).json({ error: error })
     }
 }
+
+const UpdateUser = async (req , res , next) => {
+    const {Data} = req.body;
+    const UpdateUser = await pool.query(`
+        UPDATE users
+        SET id = $1 , 
+        `)
+}
