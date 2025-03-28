@@ -5,6 +5,7 @@ import cors from 'cors';
 import Socketconnection from './SocketConnection/socketconnection.js';
 import AuthRouter from './Routes/AuthRoutes.js'
 import NavRoutes from './Routes/NavRoutes.js'
+import DashboardRoutes from './Routes/DashboardRoutes.js'
 import env from 'dotenv'
 
 
@@ -29,6 +30,7 @@ app.use(cors());
 
 app.use('/Auth', AuthRouter)
 app.use('/Nav', NavRoutes)
+app.use('/Dashboard' , DashboardRoutes)
 
 
 Socketconnection(io)
