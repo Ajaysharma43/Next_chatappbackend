@@ -1,4 +1,5 @@
 import pool from "../../Databaseconnection/DBConnection.js";
+import bcrypt from 'bcrypt'
 
 export const FindUser = async (req, res, next) => {
     try {
@@ -62,3 +63,36 @@ export const DeleteUser = async (req, res, next) => {
         res.status(404).json({ error: error })
     }
 }
+
+
+export const AddUser = async (req, res, next) => {
+    try {
+      const { UserData } = req.body;
+  
+      // Hash the password with bcrypt
+      const saltRounds = 10;
+      const hashedPassword = await bcrypt.hash(UserData.password, saltRounds);
+  
+      // Insert user into the database
+      const result = await pool.query(
+        `INSERT INTO users (name, email, phone, street, city, country, postal_code, password) 
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`,
+        [
+          UserData.name,
+          UserData.email,
+          UserData.phone,
+          UserData.street,
+          UserData.city,
+          UserData.country,
+          UserData.postal_code,
+          hashedPassword, // Store the hashed password instead of plain text
+        ]
+      );
+  
+      res.status(201).json({ message: "User added successfully", user: result.rows , Success : true });
+  
+    } catch (error) {
+      console.error("Error adding user:", error);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  };
