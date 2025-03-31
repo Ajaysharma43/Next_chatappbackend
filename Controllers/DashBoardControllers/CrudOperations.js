@@ -18,6 +18,8 @@ export const FindUser = async (req, res, next) => {
     }
 }
 
+
+
 export const UpdateUser = async (req, res, next) => {
     try {
         const { formData } = req.body;
@@ -35,6 +37,8 @@ export const UpdateUser = async (req, res, next) => {
 
 }
 
+
+
 export const DeleteUser = async (req, res, next) => {
     try {
         const { id } = req.query;
@@ -43,19 +47,17 @@ export const DeleteUser = async (req, res, next) => {
             SELECT * FROM users
             WHERE id = $1
             ` , [id])
-            if(user.rowCount == 1)
-            {
-                const DeleteUser = await pool.query(`
+        if (user.rowCount == 1) {
+            const DeleteUser = await pool.query(`
                     DELETE FROM users
                     WHERE id = $1
-                    `,[id])
+                    `, [id])
 
-                    res.status(200).json({message  : "user is deleted" , Success : true})
-            }
-            else
-            {
-                res.status(404).json({message  :"Failed to delete user" , Success : false})
-            }
+            res.status(200).json({ message: "user is deleted", Success: true })
+        }
+        else {
+            res.status(404).json({ message: "Failed to delete user", Success: false })
+        }
     } catch (error) {
         res.status(404).json({ error: error })
     }
