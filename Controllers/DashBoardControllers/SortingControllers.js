@@ -1,20 +1,60 @@
 import pool from "../../Databaseconnection/DBConnection.js";
 
-export const SortData = async (req, res, next) => {
+const Timesorting = async (req, res, next, data, limit, page) => {
     try {
-        const { data, limit, page } = req.body;
-
-        // Defaulting limit and page if not provided
         const limitVal = limit ? parseInt(limit) : 5;
         const pageVal = page ? parseInt(page) : 1;
         const offset = (pageVal - 1) * limitVal;
 
-        // Sanitize and validate the sortBy and order inputs
-        const validColumns = ['name', 'id', 'created_at']; // Replace with your valid columns
+        // Validate date inputs
+        if (!data.time.From || !data.time.To) {
+            return res.status(400).json({ error: "Both 'From' and 'To' dates are required." });
+        }
+
+        const validOrders = ['ASC', 'DESC'];
+        const order = validOrders.includes(data.order) ? data.order : 'ASC'; // Default to 'ASC'
+
+        const UsersData = await pool.query(`
+            SELECT *, COUNT(*) OVER() AS total_records
+            FROM users
+            WHERE created_at BETWEEN $1 AND $2
+            ORDER BY created_at ${order}  
+            LIMIT $3 OFFSET $4
+        `, [data.time.From, data.time.To, limitVal, offset]);
+
+        const totalRecords = UsersData.rowCount > 0 ? UsersData.rows[0].total_records : 0;
+        const totalPages = Math.ceil(totalRecords / limitVal);
+
+        res.status(200).json({
+            Data: UsersData.rows,
+            TotalPages: totalPages,
+            TotalRecords: totalRecords
+        });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+export const SortData = async (req, res, next) => {
+    try {
+        const { data, limit, page } = req.body;
+
+        if (data.sortBy === 'created_at') {
+            return await Timesorting(req, res, next, data, limit, page); // ✅ Added `await`
+        }
+
+        // Default limit and page values
+        const limitVal = limit ? parseInt(limit) : 5;
+        const pageVal = page ? parseInt(page) : 1;
+        const offset = (pageVal - 1) * limitVal;
+
+        // Sanitize and validate sorting parameters
+        const validColumns = ['name', 'id', 'created_at'];
         const validOrders = ['ASC', 'DESC'];
 
-        const sortBy = validColumns.includes(data.sortBy) ? data.sortBy : 'name'; // Default to 'name'
-        const order = validOrders.includes(data.order) ? data.order : 'ASC'; // Default to 'ASC'
+        const sortBy = validColumns.includes(data.sortBy) ? data.sortBy : 'name'; // Default: name
+        const order = validOrders.includes(data.order) ? data.order : 'ASC'; // Default: ASC
+
         const UsersData = await pool.query(`
             SELECT *, COUNT(*) OVER() AS total_records
             FROM users
@@ -30,7 +70,8 @@ export const SortData = async (req, res, next) => {
             TotalPages: totalPages,
             TotalRecords: totalRecords
         });
+
     } catch (error) {
-        res.status(404).json({ error: error.message });
+        res.status(500).json({ error: error.message });
     }
 };
