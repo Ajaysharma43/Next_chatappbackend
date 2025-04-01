@@ -35,12 +35,14 @@ const Timesorting = async (req, res, next, data, limit, page) => {
     }
 };
 
+
+
 export const SortData = async (req, res, next) => {
     try {
         const { data, limit, page } = req.body;
 
         if (data.sortBy === 'created_at') {
-            return await Timesorting(req, res, next, data, limit, page); // ✅ Added `await`
+            return await Timesorting(req, res, next, data, limit, page);
         }
 
         // Default limit and page values
@@ -75,3 +77,8 @@ export const SortData = async (req, res, next) => {
         res.status(500).json({ error: error.message });
     }
 };
+
+
+export const SearchData = (req, res, next) => {
+    const { data, limit, page } = req.body;
+}
