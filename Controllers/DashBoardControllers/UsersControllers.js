@@ -19,10 +19,10 @@ export const GetUsers = async (req, res, next) => {
         const TotalRecords = UsersData.rowCount > 0 ? UsersData.rows[0].total_records : 0;
         const TotalPages = Math.ceil(TotalRecords / Limit);
 
-        res.status(200).json({ 
-            Data: UsersData.rows, 
-            TotalPages, 
-            TotalRecords 
+        res.status(200).json({
+            Data: UsersData.rows,
+            TotalPages,
+            TotalRecords
         });
 
     } catch (error) {
