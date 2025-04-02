@@ -1,42 +1,56 @@
 import pool from "../../Databaseconnection/DBConnection.js";
 
+// Utility function for pagination
+const getPagination = (limit, page) => {
+    const limitVal = limit ? parseInt(limit, 10) : 5;
+    const pageVal = page ? parseInt(page, 10) : 1;
+    const offset = (pageVal - 1) * limitVal;
+    return { limitVal, pageVal, offset };
+};
+
+// Utility function to validate sorting parameters
+const validateSorting = (sortBy, order) => {
+    const validColumns = ['name', 'id', 'created_at'];
+    const validOrders = ['ASC', 'DESC'];
+    return {
+        sortBy: validColumns.includes(sortBy) ? sortBy : 'name',
+        order: validOrders.includes(order) ? order : 'ASC'
+    };
+};
+
+// Time-based sorting function
 const Timesorting = async (req, res, next, data, limit, page) => {
     try {
-        const limitVal = limit ? parseInt(limit) : 5;
-        const pageVal = page ? parseInt(page) : 1;
-        const offset = (pageVal - 1) * limitVal;
-
-        // Validate date inputs
-        if (!data.time.From || !data.time.To) {
+        if (!data.time?.From || !data.time?.To) {
             return res.status(400).json({ error: "Both 'From' and 'To' dates are required." });
         }
 
-        const validOrders = ['ASC', 'DESC'];
-        const order = validOrders.includes(data.order) ? data.order : 'ASC'; // Default to 'ASC'
+        const { limitVal, offset } = getPagination(limit, page);
+        const { order } = validateSorting('created_at', data.order);
 
-        const UsersData = await pool.query(`
-            SELECT *, COUNT(*) OVER() AS total_records
-            FROM users
-            WHERE created_at BETWEEN $1 AND $2
-            ORDER BY created_at ${order}  
-            LIMIT $3 OFFSET $4
-        `, [data.time.From, data.time.To, limitVal, offset]);
+        const UsersData = await pool.query(
+            `SELECT *, COUNT(*) OVER() AS total_records
+             FROM users
+             WHERE created_at BETWEEN $1 AND $2
+             ORDER BY created_at ${order}
+             LIMIT $3 OFFSET $4`,
+            [data.time.From, data.time.To, limitVal, offset]
+        );
 
-        const totalRecords = UsersData.rowCount > 0 ? UsersData.rows[0].total_records : 0;
+        const totalRecords = UsersData.rows.length > 0 ? UsersData.rows[0].total_records : 0;
         const totalPages = Math.ceil(totalRecords / limitVal);
 
-        res.status(200).json({
+        return res.status(200).json({
             Data: UsersData.rows,
             TotalPages: totalPages,
             TotalRecords: totalRecords
         });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        return res.status(500).json({ error: error.message });
     }
 };
 
-
-
+// Generic sorting function
 export const SortData = async (req, res, next) => {
     try {
         const { data, limit, page } = req.body;
@@ -45,40 +59,67 @@ export const SortData = async (req, res, next) => {
             return await Timesorting(req, res, next, data, limit, page);
         }
 
-        // Default limit and page values
-        const limitVal = limit ? parseInt(limit) : 5;
-        const pageVal = page ? parseInt(page) : 1;
-        const offset = (pageVal - 1) * limitVal;
+        const { limitVal, offset } = getPagination(limit, page);
+        const { sortBy, order } = validateSorting(data.sortBy, data.order);
 
-        // Sanitize and validate sorting parameters
-        const validColumns = ['name', 'id', 'created_at'];
-        const validOrders = ['ASC', 'DESC'];
+        const UsersData = await pool.query(
+            `SELECT *, COUNT(*) OVER() AS total_records
+             FROM users
+             ORDER BY ${sortBy} ${order}
+             LIMIT $1 OFFSET $2`,
+            [limitVal, offset]
+        );
 
-        const sortBy = validColumns.includes(data.sortBy) ? data.sortBy : 'name'; // Default: name
-        const order = validOrders.includes(data.order) ? data.order : 'ASC'; // Default: ASC
-
-        const UsersData = await pool.query(`
-            SELECT *, COUNT(*) OVER() AS total_records
-            FROM users
-            ORDER BY ${sortBy} ${order}
-            LIMIT $1 OFFSET $2
-        `, [limitVal, offset]);
-
-        const totalRecords = UsersData.rowCount > 0 ? UsersData.rows[0].total_records : 0;
+        const totalRecords = UsersData.rows.length > 0 ? UsersData.rows[0].total_records : 0;
         const totalPages = Math.ceil(totalRecords / limitVal);
 
-        res.status(200).json({
+        return res.status(200).json({
             Data: UsersData.rows,
             TotalPages: totalPages,
             TotalRecords: totalRecords
         });
 
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        return res.status(500).json({ error: error.message });
     }
 };
 
 
-export const SearchData = (req, res, next) => {
-    const { data, limit, page } = req.body;
-}
+export const SearchData = async (req, res, next) => {
+    try {
+        const { SearchUserData, limit, page } = req.body;
+
+        if (!SearchUserData) {
+            return res.status(400).json({ error: "Search term is required." , Success: false });
+        }
+
+        const offset = (page - 1) * limit;
+
+        // Fetch total count of matching records
+        const totalCountResult = await pool.query(
+            `SELECT COUNT(*) FROM users
+             WHERE name ILIKE $1`,
+            [`%${SearchUserData}%`]
+        );
+
+        const totalRecords = parseInt(totalCountResult.rows[0].count, 10);
+
+        // Fetch paginated results
+        const UserData = await pool.query(
+            `SELECT * FROM users 
+            WHERE name ILIKE $1  
+            LIMIT $2 OFFSET $3`,
+            [`%${SearchUserData}%`, limit, offset]
+        );
+
+        return res.status(200).json({
+            Data: UserData.rows,
+            TotalRecords: totalRecords,
+            TotalPages: Math.ceil(totalRecords / limit),
+            Success: true
+        });
+
+    } catch (error) {
+        return res.status(500).json({ error: error.message , Success: false });
+    }
+};
