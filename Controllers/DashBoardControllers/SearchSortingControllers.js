@@ -55,7 +55,6 @@ const SearchTimesorting = async (req, res, next, SearchUserData , data, limit, p
 export const SearchData = async (req, res, next) => {
     try {
         const { SearchUserData, limit, page } = req.body;
-
         if (!SearchUserData) {
             return res.status(400).json({ error: "Search term is required.", Success: false });
         }
