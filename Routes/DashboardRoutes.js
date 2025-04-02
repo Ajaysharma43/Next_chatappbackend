@@ -1,7 +1,7 @@
 import express from 'express'
 import { GetUsers } from '../Controllers/DashBoardControllers/UsersControllers.js';
 import { AddUser, DeleteUser, FindUser, UpdateUser } from '../Controllers/DashBoardControllers/CrudOperations.js';
-import { SearchData, SortData } from '../Controllers/DashBoardControllers/SortingControllers.js';
+import { SearchData, SearchSortedData, SortData } from '../Controllers/DashBoardControllers/SortingControllers.js';
 
 const Route = express.Router()
 
@@ -11,4 +11,5 @@ Route.delete('/Delete' , DeleteUser)
 Route.post('/CreateUser' , AddUser)
 Route.post('/SortData' , SortData)
 Route.post('/Search' , SearchData)
+Route.post('/SearchSortData' , SearchSortedData)
 export default Route;

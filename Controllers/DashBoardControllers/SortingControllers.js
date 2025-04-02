@@ -90,7 +90,7 @@ export const SearchData = async (req, res, next) => {
         const { SearchUserData, limit, page } = req.body;
 
         if (!SearchUserData) {
-            return res.status(400).json({ error: "Search term is required." , Success: false });
+            return res.status(400).json({ error: "Search term is required.", Success: false });
         }
 
         const offset = (page - 1) * limit;
@@ -120,6 +120,58 @@ export const SearchData = async (req, res, next) => {
         });
 
     } catch (error) {
-        return res.status(500).json({ error: error.message , Success: false });
+        return res.status(500).json({ error: error.message, Success: false });
+    }
+};
+
+export const SearchSortedData = async (req, res, next) => {
+    try {
+        const { SearchUserData, data, limit, page } = req.body;
+        
+        if (!SearchUserData || typeof SearchUserData !== 'string') {
+            return res.status(400).json({ message: "Invalid search input" , Success: false });
+        }
+        
+        if (!data || !data.sortBy) {
+            return res.status(400).json({ message: "Sorting criteria is required", Success: false });
+        }
+
+        if (data.sortBy === 'created_at') {
+            return await Timesorting(req, res, next, data, limit, page);
+        }
+
+        const { limitVal, offset } = getPagination(limit, page);
+        const { sortBy, order } = validateSorting(data.sortBy, data.order);
+
+        // Prevent SQL Injection by validating allowed columns for sorting
+        const allowedSortFields = ['name', 'id', 'created_at']; // Add valid fields
+        if (!allowedSortFields.includes(sortBy)) {
+            return res.status(400).json({ message: "Invalid sorting field" , Success: false });
+        }
+
+        const UserData = await pool.query(
+            `SELECT *, COUNT(*) OVER() AS total_records FROM users 
+            WHERE name ILIKE $1
+            ORDER BY ${sortBy} ${order}  
+            LIMIT $2 OFFSET $3`,
+            [`%${SearchUserData}%`, limitVal, offset]
+        );
+
+        if (UserData.rows.length === 0) {
+            return res.status(404).json({ message: "No users found", Success: false});
+        }
+        
+        const totalRecords = UserData.rows[0]?.total_records || 0;
+        const totalPages = Math.ceil(totalRecords / limitVal);
+
+        res.status(200).json({
+            UserData: UserData.rows,
+            TotalPages: totalPages,
+            TotalRecords: totalRecords,
+            Success: true
+        });
+    } catch (error) {
+        console.error("Error in SearchSortedData:", error);
+        res.status(500).json({ message: "Internal Server Error" , Success: false});
     }
 };
