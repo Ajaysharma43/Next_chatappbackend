@@ -1,7 +1,8 @@
 import express from 'express'
 import { GetUsers } from '../Controllers/DashBoardControllers/UsersControllers.js';
 import { AddUser, DeleteUser, FindUser, UpdateUser } from '../Controllers/DashBoardControllers/CrudOperations.js';
-import { SearchData, SearchSortedData, SortData } from '../Controllers/DashBoardControllers/SortingControllers.js';
+import { SortData } from '../Controllers/DashBoardControllers/SortingControllers.js';
+import { SearchData, SearchSortedData } from '../Controllers/DashBoardControllers/SearchSortingControllers.js';
 
 const Route = express.Router()
 
