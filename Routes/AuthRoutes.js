@@ -13,5 +13,6 @@ router.post('/Checkuser' , CheckUser)
 router.post('/OTPgenerate' , GenerateOtp)
 router.post('/VerifyOtp' , VerifyOtp)
 router.post('/Login' , ValidateEmail , ValidateLoginDetails , GenerateToken)
+router.post('/SocialAuth' , )
 
 export default router
