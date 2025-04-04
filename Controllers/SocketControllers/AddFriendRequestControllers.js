@@ -5,6 +5,7 @@ export const CheckFriends = async (req, res, next) => {
     try {
         const { data } = req.body;
 
+        console.log(data)
         const result = await pool.query(`
             SELECT * FROM friends
             WHERE (sender_id  = $1 AND receiver_id  = $2) 
@@ -15,7 +16,7 @@ export const CheckFriends = async (req, res, next) => {
         if (result.rowCount > 0) {
             return res.status(400).json({ message: "Users are already friends", success: false });
         }
-
+        console.log("success")
         next(); // Proceed if they are not friends
     } catch (error) {
         res.status(500).json({ error: error.message, success: false });
