@@ -36,16 +36,16 @@ export const AcceptFriendRequest = async (req, res, next) => {
             if (next) {
                 return next();
             } else {
-                return res.status(200).json({ 
-                    message: "Friend request accepted successfully", 
-                    success: true, 
-                    friend: Accept.rows[0] 
+                return res.status(200).json({
+                    message: "Friend request accepted successfully",
+                    success: true,
+                    friend: Accept.rows[0]
                 });
             }
         } else {
-            return res.status(400).json({ 
-                message: "Failed to add friend", 
-                success: false 
+            return res.status(400).json({
+                message: "Failed to add friend",
+                success: false
             });
         }
     } catch (error) {
@@ -68,23 +68,26 @@ export const DeleteFriendRequest = async (req, res, next) => {
             [data.sender, data.receiver]
         );
 
+
         // Check if the request was deleted
         if (DeleteUserRequest.rowCount > 0) {
-            res.status(200).json({ 
-                message: "User successfully added to friends", 
-                success: true 
+            let relationshipStatus = "friend";
+            res.status(200).json({
+                message: "User successfully added to friends",
+                success: true,
+                relationshipStatus: relationshipStatus
             });
         } else {
-            res.status(400).json({ 
-                message: "Failed to delete friend request", 
-                success: false 
+            res.status(400).json({
+                message: "Failed to delete friend request",
+                success: false
             });
         }
 
     } catch (error) {
-        res.status(500).json({ 
-            message: error.message, 
-            success: false 
+        res.status(500).json({
+            message: error.message,
+            success: false
         });
     }
 };

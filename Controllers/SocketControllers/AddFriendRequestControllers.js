@@ -54,8 +54,8 @@ export const SendRequest = async (req, res) => {
             VALUES ($1, $2)`, 
             [data.sender, data.receiver]
         );
-
-        res.status(200).json({ message: "Friend request sent successfully", success: true });
+        let relationshipStatus = "request_sent";
+        res.status(200).json({ message: "Friend request sent successfully", success: true , relationshipStatus : relationshipStatus });
     } catch (error) {
         res.status(500).json({ error: error.message, success: false });
     }

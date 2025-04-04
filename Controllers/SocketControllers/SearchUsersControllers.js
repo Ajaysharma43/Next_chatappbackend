@@ -19,7 +19,7 @@ export const GetSingleUser = async (req, res) => {
 
         // 🔍 Get user details
         const userQuery = await pool.query(`
-            SELECT id, name, email FROM users
+            SELECT * FROM users
             WHERE id = $1`, 
             [userid]
         );
@@ -57,6 +57,7 @@ export const GetSingleUser = async (req, res) => {
 
         // ✅ Return user data + relationship status
         res.status(200).json({
+            sender : requestQuery.rows[0],
             user: userQuery.rows[0],
             relationshipStatus,
             relation,
