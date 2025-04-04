@@ -6,6 +6,7 @@ export const CheckFriendRequest = async (req, res, next) => {
         const CheckRequest = await pool.query(`
         SELECT * from requests
         WHERE sender_id = $1 AND receiver_id = $2
+        OR sender_id = $2 AND receiver_id = $1
         ` , [data.sender, data.receiver])
 
         if (CheckRequest.rowCount == 1) {
@@ -62,6 +63,7 @@ export const DeleteFriendRequest = async (req, res, next) => {
         const DeleteUserRequest = await pool.query(
             `DELETE FROM requests 
              WHERE sender_id = $1 AND receiver_id = $2 
+             OR sender_id = $2 AND receiver_id = $1
              RETURNING *`,
             [data.sender, data.receiver]
         );

@@ -1,34 +1,62 @@
 import pool from "../../Databaseconnection/DBConnection.js";
 
+// ✅ Check if users are already friends
+export const CheckFriends = async (req, res, next) => {
+    try {
+        const { data } = req.body;
+
+        const result = await pool.query(`
+            SELECT * FROM friends
+            WHERE (sender_id  = $1 AND receiver_id  = $2) 
+               OR (sender_id = $2 AND receiver_id  = $1)`,
+            [data.sender, data.receiver]
+        );
+
+        if (result.rowCount > 0) {
+            return res.status(400).json({ message: "Users are already friends", success: false });
+        }
+
+        next(); // Proceed if they are not friends
+    } catch (error) {
+        res.status(500).json({ error: error.message, success: false });
+    }
+};
+
+// ✅ Check if a friend request already exists
 export const CheckRequest = async (req, res, next) => {
     try {
         const { data } = req.body;
-        const User = await pool.query(`
+
+        const result = await pool.query(`
             SELECT * FROM requests
             WHERE sender_id = $1 AND receiver_id = $2
-            `, [data.sender, data.receiver])
-        if (User.rowCount == 0) {
-            next()
+            OR (sender_id = $2 AND receiver_id  = $1)`,
+            [data.sender, data.receiver]
+        );
+
+        if (result.rowCount > 0) {
+            return res.status(400).json({ message: "Friend request already sent", success: false });
         }
-        else {
-            res.status(404).json({ message: "request existed", Success: false })
-        }
+
+        next(); // Proceed if no request exists
     } catch (error) {
-        res.status(404).json({ error: error, Success: false })
+        res.status(500).json({ error: error.message, success: false });
     }
-}
+};
 
-
-export const SendRequest = async (req, res, next) => {
+// ✅ Send a friend request
+export const SendRequest = async (req, res) => {
     try {
         const { data } = req.body;
-        const AddRequest = await pool.query(`
-        INSERT INTO requests(sender_id , receiver_id)
-        VALUES($1 , $2)
-        `,[data.sender , data.receiver])
-        res.status(200).json({message : "Request is Successfully" , Success : true})
-    } catch (error) {
-        res.status(404).json({ error: error, Success: false })
-    }
 
-}
+        await pool.query(`
+            INSERT INTO requests (sender_id, receiver_id)
+            VALUES ($1, $2)`, 
+            [data.sender, data.receiver]
+        );
+
+        res.status(200).json({ message: "Friend request sent successfully", success: true });
+    } catch (error) {
+        res.status(500).json({ error: error.message, success: false });
+    }
+};
