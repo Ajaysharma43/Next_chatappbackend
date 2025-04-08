@@ -9,14 +9,20 @@ export const DeleteUser = async (req, res, next) => {
         const DeleteUserRequest = await pool.query(
             `DELETE FROM requests 
                      WHERE sender_id = $1 AND receiver_id = $2 
-                     OR sender_id = $2 AND receiver_id = $1
-                     RETURNING *`,
+                     OR sender_id = $2 AND receiver_id = $1`,
             [data.sender, data.receiver]
         );
 
-        console.log(DeleteUserRequest.rowCount)
+        const Finduser = await pool.query(`
+            SELECT * FROM requests
+            WHERE sender_id = $1 AND receiver_id = $2 
+                     OR sender_id = $2 AND receiver_id = $1
+            `,[data.sender, data.receiver])
+
+        console.log(Finduser.rowCount)
         // Check if the request was deleted
-        if (DeleteUserRequest.rowCount == 0) {
+        if (Finduser.rowCount == 0) {
+            console.log("request declined successfully")
             let relationshipStatus = "no_relation";
             res.status(200).json({
                 message: "Request is successfully deleted",
