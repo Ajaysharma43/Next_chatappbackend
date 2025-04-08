@@ -4,6 +4,7 @@ import { AcceptFriendRequest, CheckFriendRequest, DeleteFriendRequest } from '..
 import { GetAllUsers, GetSingleUser } from '../Controllers/SocketControllers/SearchUsersControllers.js';
 import { DeleteUser } from '../Controllers/SocketControllers/DeclineRequestControllers.js';
 import { GetRequestController } from '../Controllers/SocketControllers/GetRequestsControllers.js';
+import { Friends } from '../Controllers/SocketControllers/FriendsControllers.js';
 
 const route = express.Router()
 
@@ -13,6 +14,7 @@ route.post('/DeclineRequest', DeleteUser)
 route.post('/SearchUsers', GetAllUsers)
 route.get('/GetSingleUser', GetSingleUser)
 route.get('/GetRequests' , GetRequestController)
+route.post('/CheckFriends' , Friends)
 
 
 export default route;

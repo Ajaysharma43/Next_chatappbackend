@@ -8,6 +8,7 @@ import NavRoutes from './Routes/NavRoutes.js'
 import DashboardRoutes from './Routes/DashboardRoutes.js'
 import ChatAppRoutes from './Routes/AddFriendsRoutes.js'
 import env from 'dotenv'
+import OnlineFriends from './SocketConnection/CheckOnlineFriends.js';
 
 
 env.config()
@@ -20,14 +21,18 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: '*',
+    origin: `${process.env.FRONTEND_URL}`,
     methods: ['GET', 'POST'],
+    credentials : true
   },
 });
 
 
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+  origin: `${process.env.FRONTEND_URL}`,
+  credentials : true
+}));
 
 app.use('/Auth', AuthRouter)
 app.use('/Nav', NavRoutes)
@@ -36,6 +41,7 @@ app.use('/Chatapp' , ChatAppRoutes)
 
 
 Socketconnection(io)
+OnlineFriends(io)
 
 server.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);

@@ -28,3 +28,16 @@ export const DeleteChat = async (data) => {
         `)
     return UpdateChats.rows;
 }
+
+export const CheckOnline = async (id) => {
+    try {
+        const FriendsData = await pool.query(`
+                    SELECT * FROM friends
+                    WHERE sender_id = $1
+                    OR receiver_id = $1
+                    `, [id.userId])
+        return FriendsData.rows
+    } catch (error) {
+        console.log(error)
+    }
+}

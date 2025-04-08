@@ -1,39 +1,82 @@
-import { AddChat, DeleteChat, RetriveChats } from "../Controllers/SocketControllers/SocketControllers.js";
+import {
+  AddChat,
+  CheckOnline,
+  DeleteChat,
+  RetriveChats,
+} from "../Controllers/SocketControllers/SocketControllers.js";
+import OnlineFriends from "./CheckOnlineFriends.js";
+
+let onlineUsers = new Map(); // userId -> socketId
 
 const Socketconnection = (io) => {
+  io.on("connection", async (socket) => {
+    console.log("✅ A user connected:", socket.id);
 
-io.on('connection', async (socket) => {
-    console.log('A user connected:', socket.id);
-    const chats = await RetriveChats()
-    socket.emit('GetPrevChats' , {chats})
-  
-    socket.emit('connection', { message: 'Welcome to the server!' });
-  
-    
-    socket.on('message', async (data) => {
-      const Updatedmessages = await AddChat(data)
-      console.log('Message received:', Updatedmessages);
-      
-      io.emit('response', { message: Updatedmessages });
+    // Send all previous chats
+    const chats = await RetriveChats();
+    socket.emit("GetPrevChats", { chats });
+
+    // Send welcome message
+    socket.emit("connection", { message: "Welcome to the server!" });
+
+    // Handle user online event
+    socket.on("user-online", (userId) => {
+      if (!userId) return;
+
+      onlineUsers.set(userId, socket.id);
+      console.log(`🟢 User ${userId} is online as ${socket.id}`);
+      io.emit("update-online-status", [...onlineUsers.keys()]);
     });
 
-    socket.on('typing' , (user) => {
-      socket.broadcast.emit('userTyping' , (user))
-    })
+    // New message
+    socket.on("message", async (data) => {
+      const updatedMessages = await AddChat(data);
+      io.emit("response", { message: updatedMessages });
+    });
 
-    socket.on('stoppedtyping' , (user) =>{
-      socket.broadcast.emit('userStoppedTyping' , (user))
-    })
+    // Typing indicators
+    socket.on("typing", (user) => {
+      socket.broadcast.emit("userTyping", user);
+    });
 
-    socket.on('deleteMessage' , async (id) => {
-      const UpdatedData = await DeleteChat(id)
-      io.emit('GetUpdatedChats' , {UpdatedData})
-    })
-  
-    socket.on('disconnect', () => {
-      console.log('A user disconnected:', socket.id);
+    socket.on("stoppedtyping", (user) => {
+      socket.broadcast.emit("userStoppedTyping", user);
+    });
+
+    OnlineFriends(socket , onlineUsers)
+
+    // Delete message
+    socket.on("deleteMessage", async (id) => {
+      const updatedData = await DeleteChat(id);
+      io.emit("GetUpdatedChats", { UpdatedData: updatedData });
+    });
+
+    // Manual check of online status
+    socket.on("IsUserOnline", async ({ id }) => {
+      console.log("🔍 Checking online for:", id);
+      const isOnline = onlineUsers.has(id);
+      const socketId = onlineUsers.get(id) || null;
+      const userData = await CheckOnline(id);
+      socket.emit("UserOnlineStatus", { id, isOnline, socketId, userData });
+      console.log(userData);
+    });
+
+    // Disconnect
+    socket.on("disconnect", () => {
+      console.log("❌ A user disconnected:", socket.id);
+
+      for (const [userId, sid] of onlineUsers) {
+        if (sid === socket.id) {
+          console.log(`🔴 User ${userId} is offline`);
+          onlineUsers.delete(userId);
+          break;
+        }
+      }
+
+      // Update everyone
+      io.emit("update-online-status", [...onlineUsers.keys()]);
     });
   });
-}
+};
 
 export default Socketconnection;
