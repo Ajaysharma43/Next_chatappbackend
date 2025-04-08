@@ -5,6 +5,7 @@ import {
   RetriveChats,
 } from "../Controllers/SocketControllers/SocketControllers.js";
 import OnlineFriends from "./CheckOnlineFriends.js";
+import PersonalChats from "./PersonalChats.js";
 
 let onlineUsers = new Map(); // userId -> socketId
 
@@ -44,6 +45,8 @@ const Socketconnection = (io) => {
     });
 
     OnlineFriends(socket , onlineUsers)
+
+    PersonalChats(socket)
 
     // Delete message
     socket.on("deleteMessage", async (id) => {
