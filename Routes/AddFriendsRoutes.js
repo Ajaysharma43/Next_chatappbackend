@@ -5,6 +5,7 @@ import { GetAllUsers, GetSingleUser } from '../Controllers/SocketControllers/Sea
 import { DeleteUser } from '../Controllers/SocketControllers/DeclineRequestControllers.js';
 import { GetRequestController } from '../Controllers/SocketControllers/GetRequestsControllers.js';
 import { Friends } from '../Controllers/SocketControllers/FriendsControllers.js';
+import { UnreadMessages } from '../Controllers/SocketControllers/UnreadMessagesControllers.js';
 
 const route = express.Router()
 
@@ -15,6 +16,7 @@ route.post('/SearchUsers', GetAllUsers)
 route.get('/GetSingleUser', GetSingleUser)
 route.get('/GetRequests' , GetRequestController)
 route.post('/CheckFriends' , Friends)
+route.post('/UnreadMessages' , UnreadMessages)
 
 
 export default route;
