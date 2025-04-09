@@ -2,7 +2,6 @@ import pool from "../../Databaseconnection/DBConnection.js"
 
 export const GetPreviosChats = async (id , userid) => {
     try {
-        console.log(id , userid)
         const PrevChats = await pool.query(`
             SELECT * FROM personalchat
             WHERE sender = $1 AND receiver = $2
@@ -24,7 +23,6 @@ export const GetPreviosChats = async (id , userid) => {
 
 export const SendMessage = async (message , id , userid) => {
     try {
-        console.log(message , id , userid)
         const Send = await pool.query(`
             INSERT INTO personalchat(message , sender , receiver)
             VALUES($1 , $2 , $3)

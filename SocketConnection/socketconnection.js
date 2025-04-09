@@ -46,7 +46,8 @@ const Socketconnection = (io) => {
 
     OnlineFriends(socket , onlineUsers)
 
-    PersonalChats(io , socket)
+    PersonalChats(io, socket, { onlineUsers: [...onlineUsers.keys()] });
+
 
     // Delete message
     socket.on("deleteMessage", async (id) => {
