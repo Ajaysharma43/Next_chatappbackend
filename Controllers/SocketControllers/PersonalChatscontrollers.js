@@ -6,6 +6,7 @@ export const GetPreviosChats = async (id , userid) => {
             SELECT * FROM personalchat
             WHERE sender = $1 AND receiver = $2
             OR sender = $2 AND receiver = $1
+            ORDER BY created_at
             `,[id , userid])
 
             if(PrevChats.rowCount == 0)

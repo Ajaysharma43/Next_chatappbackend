@@ -29,6 +29,8 @@ const OnlineFriends = (socket, onlineUsers) => {
         friends: friendIds,
         onlineFriends,
       });
+
+      
     } catch (error) {
       console.error("Error fetching online friends:", error);
       socket.emit("online-friends-error", { message: "Failed to get friends" });
