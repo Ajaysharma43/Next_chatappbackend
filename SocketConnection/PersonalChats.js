@@ -55,9 +55,19 @@ const PersonalChats = (io, socket, onlineUsers) => {
     let sender = userid
     let receiver = id
     const UnreadMessages = await UnreadMessage(sender, receiver)
-    socket.broadcast.emit('UpdateUnreadMessages', UnreadMessages)
-    io.to(userid).emit("UpdatedDeletedMessages", UpdatedMessages);
-    io.to(id).emit("UpdatedDeletedMessages", UpdatedMessages);
+    console.log(UnreadMessages)
+    console.log(`${UnreadMessages.length == 0 ? "UnreadMessages are empty" : UnreadMessages}`)
+    if (UnreadMessages.length == 0) {
+      UnreadMessages.push({ sender: 12, count: '0' })
+      socket.broadcast.emit('UpdateUnreadMessages', UnreadMessages)
+      io.to(userid).emit("UpdatedDeletedMessages", UpdatedMessages);
+      io.to(id).emit("UpdatedDeletedMessages", UpdatedMessages);
+    }
+    else {
+      socket.broadcast.emit('UpdateUnreadMessages', UnreadMessages)
+      io.to(userid).emit("UpdatedDeletedMessages", UpdatedMessages);
+      io.to(id).emit("UpdatedDeletedMessages", UpdatedMessages);
+    }
   })
 
   socket.on('typing', (id) => {
