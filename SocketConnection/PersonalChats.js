@@ -1,5 +1,6 @@
 import { MarkAsReadMessages, UpdateMessageStatus } from "../Controllers/SocketControllers/GetUnreadMessages.js";
 import { GetPreviosChats, SendMessage } from "../Controllers/SocketControllers/PersonalChatscontrollers.js";
+import { DeletePersonalChat } from "../Controllers/SocketControllers/SocketControllers.js";
 import { UnreadMessage } from "../Controllers/SocketControllers/UnreadMessagesControllers.js";
 
 let isRecieveronline = true
@@ -55,6 +56,13 @@ const PersonalChats = (io, socket, onlineUsers) => {
     const UnreadMessages = await UnreadMessage(sender, receiver)
     console.log(UnreadMessages)
     socket.emit('UpdateUnreadMessages', UnreadMessages)
+  })
+
+  socket.on('DeleteMessage' , async (messageId, userid, id) => {
+    console.log(messageId, userid, id)
+    const UpdatedMessages = await DeletePersonalChat(messageId, userid, id)
+    io.to(userid).emit("UpdatedDeletedMessages", UpdatedMessages);
+    io.to(id).emit("UpdatedDeletedMessages", UpdatedMessages);
   })
 };
 
