@@ -11,16 +11,13 @@ const PersonalChats = (io, socket, onlineUsers) => {
     isRecieveronline = true
     socket.join(userid);
     const updateddata = await MarkAsReadMessages(parseInt(id), userid)
-    console.log(updateddata)
     io.to(parseInt(id)).emit('UpdateMessages', updateddata)
     io.to(userid).emit('UpdateMessages', updateddata)
-    console.log(`User ${userid} joined their private room`);
   });
 
   socket.on("leave-room", (userId) => {
     socket.leave(userId.toString());
     isRecieveronline = false
-    console.log(`User ${userId} left their private room`);
   });
 
   // Load previous messages
@@ -33,7 +30,6 @@ const PersonalChats = (io, socket, onlineUsers) => {
     const MarkasRead = await MarkAsReadMessages(id, userid)
     io.to(userid).emit("UpdateMessagesStatus", MarkasRead);
     io.to(id).emit("UpdateMessagesStatus", MarkasRead);
-    console.log("message mark as read and reciver is online")
   })
 
   // Handle sending messages
@@ -42,10 +38,7 @@ const PersonalChats = (io, socket, onlineUsers) => {
     const Messages = await SendMessage(message, id, userid);
     let sender = userid
     let receiver = parseInt(id)
-    console.log("the receiver id is : ", receiver)
     const UnreadMessages = await UnreadMessage(sender, receiver)
-    console.log("the reciver id is : " , receiver)
-    console.log("this message is sent but not read ", UnreadMessages)
     socket.broadcast.emit('UpdateUnreadMessages', UnreadMessages)
     // Emit updated messages to both sender and receiver rooms
     io.to(userid).emit("RecieveMessages", Messages);
@@ -54,15 +47,21 @@ const PersonalChats = (io, socket, onlineUsers) => {
 
   socket.on('GetUnreadMessages', async (sender, receiver) => {
     const UnreadMessages = await UnreadMessage(sender, receiver)
-    console.log(UnreadMessages)
     socket.emit('UpdateUnreadMessages', UnreadMessages)
   })
 
-  socket.on('DeleteMessage' , async (messageId, userid, id) => {
-    console.log(messageId, userid, id)
+  socket.on('DeleteMessage', async (messageId, userid, id) => {
     const UpdatedMessages = await DeletePersonalChat(messageId, userid, id)
+    let sender = userid
+    let receiver = id
+    const UnreadMessages = await UnreadMessage(sender, receiver)
+    socket.broadcast.emit('UpdateUnreadMessages', UnreadMessages)
     io.to(userid).emit("UpdatedDeletedMessages", UpdatedMessages);
     io.to(id).emit("UpdatedDeletedMessages", UpdatedMessages);
+  })
+
+  socket.on('typing', (id) => {
+    socket.broadcast.emit('isTyping', id)
   })
 };
 
