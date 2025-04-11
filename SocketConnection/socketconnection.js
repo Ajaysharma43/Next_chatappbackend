@@ -13,72 +13,111 @@ const Socketconnection = (io) => {
   io.on("connection", async (socket) => {
     console.log("✅ A user connected:", socket.id);
 
-    // Send all previous chats
-    const chats = await RetriveChats();
-    socket.emit("GetPrevChats", { chats });
+    try {
+      // Send all previous chats
+      const chats = await RetriveChats();
+      socket.emit("GetPrevChats", { chats });
 
-    // Send welcome message
-    socket.emit("connection", { message: "Welcome to the server!" });
+      // Welcome message
+      socket.emit("connection", { message: "Welcome to the server!" });
+    } catch (err) {
+      console.error("❌ Error sending previous chats or welcome:", err);
+    }
 
-    // Handle user online event
+    // User online
     socket.on("user-online", (userId) => {
-      if (!userId) return;
-
-      onlineUsers.set(userId, socket.id);
-      console.log(`🟢 User ${userId} is online as ${socket.id}`);
-      io.emit("update-online-status", [...onlineUsers.keys()]);
+      try {
+        if (!userId) return;
+        onlineUsers.set(userId, socket.id);
+        console.log(`🟢 User ${userId} is online as ${socket.id}`);
+        io.emit("update-online-status", [...onlineUsers.keys()]);
+      } catch (err) {
+        console.error("❌ Error setting user online:", err);
+      }
     });
 
-    // New message
+    // Message
     socket.on("message", async (data) => {
-      const updatedMessages = await AddChat(data);
-      io.emit("response", { message: updatedMessages });
+      try {
+        const updatedMessages = await AddChat(data);
+        io.emit("response", { message: updatedMessages });
+      } catch (err) {
+        console.error("❌ Error sending message:", err);
+      }
     });
 
-    // Typing indicators
+    // Typing
     socket.on("typing", (user) => {
-      socket.broadcast.emit("userTyping", user);
+      try {
+        socket.broadcast.emit("userTyping", user);
+      } catch (err) {
+        console.error("❌ Error broadcasting typing:", err);
+      }
     });
 
     socket.on("stoppedtyping", (user) => {
-      socket.broadcast.emit("userStoppedTyping", user);
+      try {
+        socket.broadcast.emit("userStoppedTyping", user);
+      } catch (err) {
+        console.error("❌ Error broadcasting stopped typing:", err);
+      }
     });
 
-    OnlineFriends(socket , onlineUsers)
+    // Online friends logic
+    try {
+      OnlineFriends(socket, onlineUsers);
+    } catch (err) {
+      console.error("❌ Error in OnlineFriends handler:", err);
+    }
 
-    PersonalChats(io, socket, { onlineUsers: [...onlineUsers.keys()] });
-
+    // Personal chats logic
+    try {
+      PersonalChats(io, socket, { onlineUsers: [...onlineUsers.keys()] });
+    } catch (err) {
+      console.error("❌ Error in PersonalChats handler:", err);
+    }
 
     // Delete message
     socket.on("deleteMessage", async (id) => {
-      const updatedData = await DeleteChat(id);
-      io.emit("GetUpdatedChats", { UpdatedData: updatedData });
+      try {
+        const updatedData = await DeleteChat(id);
+        io.emit("GetUpdatedChats", { UpdatedData: updatedData });
+      } catch (err) {
+        console.error("❌ Error deleting message:", err);
+      }
     });
 
-    // Manual check of online status
+    // Check if a user is online manually
     socket.on("IsUserOnline", async ({ id }) => {
-      console.log("🔍 Checking online for:", id);
-      const isOnline = onlineUsers.has(id);
-      const socketId = onlineUsers.get(id) || null;
-      const userData = await CheckOnline(id);
-      socket.emit("UserOnlineStatus", { id, isOnline, socketId, userData });
-      console.log(userData);
+      try {
+        console.log("🔍 Checking online for:", id);
+        const isOnline = onlineUsers.has(id);
+        const socketId = onlineUsers.get(id) || null;
+        const userData = await CheckOnline(id);
+        socket.emit("UserOnlineStatus", { id, isOnline, socketId, userData });
+      } catch (err) {
+        console.error("❌ Error checking user online status:", err);
+      }
     });
 
     // Disconnect
     socket.on("disconnect", () => {
-      console.log("❌ A user disconnected:", socket.id);
+      try {
+        console.log("❌ A user disconnected:", socket.id);
 
-      for (const [userId, sid] of onlineUsers) {
-        if (sid === socket.id) {
-          console.log(`🔴 User ${userId} is offline`);
-          onlineUsers.delete(userId);
-          break;
+        for (const [userId, sid] of onlineUsers) {
+          if (sid === socket.id) {
+            console.log(`🔴 User ${userId} is offline`);
+            onlineUsers.delete(userId);
+            break;
+          }
         }
-      }
 
-      // Update everyone
-      io.emit("update-online-status", [...onlineUsers.keys()]);
+        // Broadcast updated online users
+        io.emit("update-online-status", [...onlineUsers.keys()]);
+      } catch (err) {
+        console.error("❌ Error during disconnect:", err);
+      }
     });
   });
 };
