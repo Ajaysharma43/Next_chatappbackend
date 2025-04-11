@@ -44,9 +44,9 @@ const PersonalChats = (io, socket, onlineUsers) => {
   })
 
   // Handle sending messages
-  socket.on("SendMessage", async (message, id, userid , friendsid) => {
+  socket.on("SendMessage", async (message, id, userid, friendsid) => {
 
-    const Messages = await SendMessage(message, id, userid , friendsid);
+    const Messages = await SendMessage(message, id, userid, friendsid);
     let sender = userid
     let receiver = parseInt(id)
     const UnreadMessages = await UnreadMessage(sender, receiver)
