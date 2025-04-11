@@ -6,6 +6,7 @@ import { DeleteUser } from '../Controllers/SocketControllers/DeclineRequestContr
 import { GetRequestController } from '../Controllers/SocketControllers/GetRequestsControllers.js';
 import { Friends } from '../Controllers/SocketControllers/FriendsControllers.js';
 import { UnreadMessages } from '../Controllers/SocketControllers/UnreadMessagesControllers.js';
+import { DeleteFriend } from '../Controllers/SocketControllers/DeleteFriendControllers.js';
 
 const route = express.Router()
 
@@ -17,6 +18,7 @@ route.get('/GetSingleUser', GetSingleUser)
 route.get('/GetRequests' , GetRequestController)
 route.post('/CheckFriends' , Friends)
 route.post('/UnreadMessages' , UnreadMessages)
+route.post('/DeleteFriend' , DeleteFriend , Friends)
 
 
 export default route;

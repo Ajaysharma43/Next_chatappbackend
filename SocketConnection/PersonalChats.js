@@ -21,9 +21,14 @@ const PersonalChats = (io, socket, onlineUsers) => {
     console.log(`User ${userId} joined their friends room.`);
   });
 
-  socket.on("leave-room", (userId) => {
+  socket.on('leave-friends-room', (userId) => {
     socket.leave(userId.toString());
+    console.log(`User ${userId} joined their friends room.`);
+  })
+
+  socket.on("leave-room", (userId) => {
     isRecieveronline = false
+    socket.leave(userId);
   });
 
   // Load previous messages
@@ -39,9 +44,9 @@ const PersonalChats = (io, socket, onlineUsers) => {
   })
 
   // Handle sending messages
-  socket.on("SendMessage", async (message, id, userid) => {
+  socket.on("SendMessage", async (message, id, userid , friendsid) => {
 
-    const Messages = await SendMessage(message, id, userid);
+    const Messages = await SendMessage(message, id, userid , friendsid);
     let sender = userid
     let receiver = parseInt(id)
     const UnreadMessages = await UnreadMessage(sender, receiver)
@@ -64,10 +69,16 @@ const PersonalChats = (io, socket, onlineUsers) => {
     let receiver = id
     const UnreadMessages = await UnreadMessage(sender, receiver)
     if (UnreadMessages.length == 0) {
+      const FriendsData = await UpdateFriendsData(parseInt(id))
+
       UnreadMessages.push({ sender: userid, count: '0' })
       io.to(id.toString()).emit('UpdateUnreadMessages', UnreadMessages)
+
       io.to(userid).emit("UpdatedDeletedMessages", UpdatedMessages);
       io.to(id).emit("UpdatedDeletedMessages", UpdatedMessages);
+
+      io.to(id.toString()).emit('UpdateFriendsData', FriendsData)
+      io.to(id.toString()).emit('UpdateUnreadMessages', UnreadMessages)
     }
     else {
       io.to(id.toString()).emit('UpdateUnreadMessages', UnreadMessages)

@@ -22,13 +22,13 @@ export const GetPreviosChats = async (id , userid) => {
     }
 }
 
-export const SendMessage = async (message , id , userid) => {
+export const SendMessage = async (message , id , userid , friendsid) => {
     try {
         const Send = await pool.query(`
-            INSERT INTO personalchat(message , sender , receiver)
-            VALUES($1 , $2 , $3)
+            INSERT INTO personalchat(message , sender , receiver , conversationid)
+            VALUES($1 , $2 , $3 , $4)
             RETURNING *
-            `,[message , userid , id])
+            `,[message , userid , id , friendsid])
             return Send.rows
     } catch (error) {
         console.log(error)
