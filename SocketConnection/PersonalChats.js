@@ -88,7 +88,7 @@ const PersonalChats = (io, socket, onlineUsers) => {
   })
 
   socket.on('typing', (id) => {
-    socket.broadcast.emit('isTyping', id)
+    io.to(parseInt(id)).emit('isTyping', id)
   })
 };
 
