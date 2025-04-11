@@ -10,6 +10,8 @@ import { DeleteFriend } from '../Controllers/SocketControllers/DeleteFriendContr
 
 const route = express.Router()
 
+// the routes are to handle the requests for addfriend , send friend request , decline or accept request etc.
+
 route.post('/SendRequest', CheckFriends, CheckRequest, SendRequest)
 route.post('/AcceptRequest', CheckFriendRequest, AcceptFriendRequest, DeleteFriendRequest)
 route.post('/DeclineRequest', DeleteUser)

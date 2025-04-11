@@ -8,6 +8,7 @@ import { CreateNewUser, SocialAuth , GenerateSocialToken } from '../Controllers/
 
 const router = express.Router();
 
+// these routes are to handle the authentication
 
 router.post('/Signup' , CreateUser)
 router.post('/Checkuser' , CheckUser)

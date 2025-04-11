@@ -6,6 +6,8 @@ import { SearchData, SearchSortedData } from '../Controllers/DashBoardController
 
 const Route = express.Router()
 
+// these routes are for the Dashboard apis
+
 Route.get('/GetData' , GetUsers)
 Route.post('/Update' , FindUser , UpdateUser)
 Route.delete('/Delete' , DeleteUser)
