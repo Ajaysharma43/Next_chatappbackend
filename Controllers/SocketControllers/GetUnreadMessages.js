@@ -1,13 +1,5 @@
 import pool from "../../Databaseconnection/DBConnection.js"
 
-export const GetUnreadMessages = (req, res, next) => {
-    try {
-
-    } catch (error) {
-        console.log(error)
-    }
-}
-
 export const MarkAsReadMessages = async (id, userid) => {
     try {
         const MarkRead = await pool.query(`
