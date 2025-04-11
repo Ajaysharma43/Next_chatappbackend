@@ -18,7 +18,7 @@ const validateSorting = (sortBy, order) => {
     };
 };
 
-const SearchTimesorting = async (req, res, next, SearchUserData , data, limit, page) => {
+const SearchTimesorting = async (req, res, next, SearchUserData, data, limit, page) => {
     try {
         if (!data.time?.From || !data.time?.To) {
             return res.status(400).json({ error: "Both 'From' and 'To' dates are required." });
@@ -36,7 +36,7 @@ const SearchTimesorting = async (req, res, next, SearchUserData , data, limit, p
              LIMIT $4 OFFSET $5`,
             [`%${SearchUserData}%`, data.time.From, data.time.To, limitVal, offset]
         );
-        
+
 
         const totalRecords = UsersData.rows.length > 0 ? UsersData.rows[0].total_records : 0;
         const totalPages = Math.ceil(totalRecords / limitVal);
@@ -95,17 +95,17 @@ export const SearchData = async (req, res, next) => {
 export const SearchSortedData = async (req, res, next) => {
     try {
         const { SearchUserData, data, limit, page } = req.body;
-        
+
         if (!SearchUserData || typeof SearchUserData !== 'string') {
-            return res.status(400).json({ message: "Invalid search input" , Success: false });
+            return res.status(400).json({ message: "Invalid search input", Success: false });
         }
-        
+
         if (!data || !data.sortBy) {
             return res.status(400).json({ message: "Sorting criteria is required", Success: false });
         }
 
         if (data.sortBy === 'created_at') {
-            return await SearchTimesorting(req, res, next, SearchUserData , data, limit, page);
+            return await SearchTimesorting(req, res, next, SearchUserData, data, limit, page);
         }
 
         const { limitVal, offset } = getPagination(limit, page);
@@ -114,7 +114,7 @@ export const SearchSortedData = async (req, res, next) => {
         // Prevent SQL Injection by validating allowed columns for sorting
         const allowedSortFields = ['name', 'id', 'created_at']; // Add valid fields
         if (!allowedSortFields.includes(sortBy)) {
-            return res.status(400).json({ message: "Invalid sorting field" , Success: false });
+            return res.status(400).json({ message: "Invalid sorting field", Success: false });
         }
 
         const UserData = await pool.query(
@@ -126,9 +126,9 @@ export const SearchSortedData = async (req, res, next) => {
         );
 
         if (UserData.rows.length === 0) {
-            return res.status(404).json({ message: "No users found", Success: false});
+            return res.status(404).json({ message: "No users found", Success: false });
         }
-        
+
         const totalRecords = UserData.rows[0]?.total_records || 0;
         const totalPages = Math.ceil(totalRecords / limitVal);
 
@@ -140,6 +140,6 @@ export const SearchSortedData = async (req, res, next) => {
         });
     } catch (error) {
         console.error("Error in SearchSortedData:", error);
-        res.status(500).json({ message: "Internal Server Error" , Success: false});
+        res.status(500).json({ message: "Internal Server Error", Success: false });
     }
 };

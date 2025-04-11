@@ -9,7 +9,7 @@ export const CheckFriends = async (req, res, next) => {
         const result = await pool.query(`
             SELECT * FROM friends
             WHERE (sender_id  = $1 AND receiver_id  = $2) 
-               OR (sender_id = $2 AND receiver_id  = $1)`,
+            OR (sender_id = $2 AND receiver_id  = $1)`,
             [data.sender, data.receiver]
         );
 

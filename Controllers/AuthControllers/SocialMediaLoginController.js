@@ -25,7 +25,7 @@ export const CheckUser = async (userid) => {
         console.log(userid)
         console.log("Checking if user already exists...");
         const user = await pool.query(
-            `SELECT * FROM users WHERE socialid = $1`,
+                `SELECT * FROM users WHERE socialid = $1`,
             [userid]
         );
 
@@ -58,7 +58,7 @@ export const CreateNewUser = async (req, res, next) => {
             // Insert new user
             const newUser = await pool.query(
                 `INSERT INTO users (name, email, socialauthenticated, socialid) 
-     VALUES ($1, $2, $3, $4) RETURNING id`,
+                VALUES ($1, $2, $3, $4) RETURNING id`,
                 [payload.name, payload.email, payload.email_verified, userid]
             );
 
@@ -75,7 +75,7 @@ export const GenerateSocialToken = async (req, res, next) => {
     try {
         const { userid } = req.body;
         const user = await pool.query(
-            `SELECT * FROM users WHERE socialid = $1`,
+                `SELECT * FROM users WHERE socialid = $1`,
             [userid]
         );
         const UserData = user.rows.find((item) => item.socialid === userid)

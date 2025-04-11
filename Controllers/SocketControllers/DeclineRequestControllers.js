@@ -7,16 +7,16 @@ export const DeleteUser = async (req, res, next) => {
         
         // Delete request and return the deleted row
         const DeleteUserRequest = await pool.query(
-            `DELETE FROM requests 
+                    `DELETE FROM requests 
                      WHERE sender_id = $1 AND receiver_id = $2 
                      OR sender_id = $2 AND receiver_id = $1`,
             [data.sender, data.receiver]
         );
 
         const Finduser = await pool.query(`
-            SELECT * FROM requests
-            WHERE sender_id = $1 AND receiver_id = $2 
-                     OR sender_id = $2 AND receiver_id = $1
+                    SELECT * FROM requests
+                    WHERE sender_id = $1 AND receiver_id = $2 
+                    OR sender_id = $2 AND receiver_id = $1
             `,[data.sender, data.receiver])
 
         console.log(Finduser.rowCount)

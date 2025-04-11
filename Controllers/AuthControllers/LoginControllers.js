@@ -22,8 +22,8 @@ export const ValidateLoginDetails = async (req, res, next) => {
     try {
         const { formData } = req.body;
         const Validate = await pool.query(`
-            SELECT * FROM users 
-            WHERE email = $1
+                SELECT * FROM users 
+                WHERE email = $1
             `, [formData.email])
         if (Validate.rows.length == 1) {
             return next()

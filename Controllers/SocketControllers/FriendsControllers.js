@@ -15,12 +15,12 @@ export const Friends = async (req, res, next) => {
     u2.email AS receiver_email,
     pc.message AS last_message,
     pc.created_at AS last_message_time
-FROM friends f
-INNER JOIN users u1 ON f.sender_id = u1.id
-INNER JOIN users u2 ON f.receiver_id = u2.id
+    FROM friends f
+    INNER JOIN users u1 ON f.sender_id = u1.id
+    INNER JOIN users u2 ON f.receiver_id = u2.id
 
 -- Join the last message for each friend pair
-LEFT JOIN LATERAL (
+    LEFT JOIN LATERAL (
     SELECT pc.message, pc.created_at
     FROM personalchat pc
     WHERE (
@@ -30,13 +30,13 @@ LEFT JOIN LATERAL (
     )
     ORDER BY pc.created_at DESC
     LIMIT 1
-) pc ON true
+    ) pc ON true
 
 -- Filter friends for the current user
-WHERE f.sender_id = $1 OR f.receiver_id = $1
+    WHERE f.sender_id = $1 OR f.receiver_id = $1
 
 -- Order by the latest message time (nulls last if no messages)
-ORDER BY pc.created_at DESC NULLS LAST;
+    ORDER BY pc.created_at DESC NULLS LAST;
 
     `, [id]);
 
@@ -66,9 +66,9 @@ export const UpdateFriendsData = async (id) => {
     u2.email AS receiver_email,
     pc.message AS last_message,
     pc.created_at AS last_message_time
-  FROM friends f
-  INNER JOIN users u1 ON f.sender_id = u1.id
-  INNER JOIN users u2 ON f.receiver_id = u2.id
+    FROM friends f
+    INNER JOIN users u1 ON f.sender_id = u1.id
+    INNER JOIN users u2 ON f.receiver_id = u2.id
   
   -- Join the last message for each friend pair
   LEFT JOIN LATERAL (
@@ -81,13 +81,13 @@ export const UpdateFriendsData = async (id) => {
     )
     ORDER BY pc.created_at DESC
     LIMIT 1
-  ) pc ON true
+    ) pc ON true
   
   -- Filter friends for the current user
-  WHERE f.sender_id = $1 OR f.receiver_id = $1
+    WHERE f.sender_id = $1 OR f.receiver_id = $1
   
   -- Order by the latest message time (nulls last if no messages)
-  ORDER BY pc.created_at DESC NULLS LAST;
+    ORDER BY pc.created_at DESC NULLS LAST;
   
     `, [id]);
 

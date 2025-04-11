@@ -5,14 +5,14 @@ export const UnreadMessages = async (req, res, next) => {
         const { sender, receiver } = req.body
         const UnreadMessagesData = await pool.query(`
             SELECT sender, COUNT(messagestatus) 
-FROM personalchat
-WHERE (
-    (sender = $2 AND receiver = $1) 
-    OR 
-    (sender = $1 AND receiver = $2)
-) 
-AND messagestatus = $3
-GROUP BY sender
+            FROM personalchat
+            WHERE (
+                (sender = $2 AND receiver = $1) 
+                OR 
+                (sender = $1 AND receiver = $2)
+            ) 
+            AND messagestatus = $3
+            GROUP BY sender
 
 
             `, [sender, receiver, false])
