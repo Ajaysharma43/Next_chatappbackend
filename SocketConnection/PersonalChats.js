@@ -46,7 +46,7 @@ const PersonalChats = (io, socket, onlineUsers) => {
     let receiver = parseInt(id)
     const UnreadMessages = await UnreadMessage(sender, receiver)
     const FriendsData = await UpdateFriendsData(parseInt(id))
-    io.to(id.toString()).emit('UpdateFriendsData' , FriendsData)
+    io.to(id.toString()).emit('UpdateFriendsData', FriendsData)
     io.to(id.toString()).emit('UpdateUnreadMessages', UnreadMessages)
     // Emit updated messages to both sender and receiver rooms
     io.to(userid).emit("RecieveMessages", Messages);
@@ -64,7 +64,7 @@ const PersonalChats = (io, socket, onlineUsers) => {
     let receiver = id
     const UnreadMessages = await UnreadMessage(sender, receiver)
     if (UnreadMessages.length == 0) {
-      UnreadMessages.push({ sender: 12, count: '0' })
+      UnreadMessages.push({ sender: userid, count: '0' })
       io.to(id.toString()).emit('UpdateUnreadMessages', UnreadMessages)
       io.to(userid).emit("UpdatedDeletedMessages", UpdatedMessages);
       io.to(id).emit("UpdatedDeletedMessages", UpdatedMessages);
