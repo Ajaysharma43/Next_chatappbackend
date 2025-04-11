@@ -23,7 +23,7 @@ const io = new Server(server, {
   cors: {
     origin: `${process.env.FRONTEND_URL}`,
     methods: ['GET', 'POST'],
-    credentials : true
+    credentials: true
   },
 });
 
@@ -31,18 +31,20 @@ const io = new Server(server, {
 app.use(express.json());
 app.use(cors({
   origin: `${process.env.FRONTEND_URL}`,
-  credentials : true
+  credentials: true
 }));
 
+// the Routes for the api
 app.use('/Auth', AuthRouter)
 app.use('/Nav', NavRoutes)
-app.use('/Dashboard' , DashboardRoutes)
-app.use('/Chatapp' , ChatAppRoutes)
+app.use('/Dashboard', DashboardRoutes)
+app.use('/Chatapp', ChatAppRoutes)
 
-
+// the socket connection 
 Socketconnection(io)
 OnlineFriends(io)
 
+// the server listining port
 server.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
