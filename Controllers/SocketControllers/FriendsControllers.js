@@ -5,7 +5,7 @@ export const Friends = async (req, res, next) => {
     const { id, data } = req.body;
 
     const FriendsData = await pool.query(`
-      SELECT 
+SELECT 
     f.*,
     u1.id AS sender_user_id,
     u1.name AS sender_name,
@@ -14,13 +14,20 @@ export const Friends = async (req, res, next) => {
     u2.name AS receiver_name,
     u2.email AS receiver_email,
     pc.message AS last_message,
-    pc.created_at AS last_message_time
-    FROM friends f
-    INNER JOIN users u1 ON f.sender_id = u1.id
-    INNER JOIN users u2 ON f.receiver_id = u2.id
+    pc.created_at AS last_message_time,
+    bu.blocked_id AS Blocked_id,
+    -- Check if either user blocked the other
+    CASE 
+        WHEN bu.blocker_id IS NOT NULL THEN true 
+        ELSE false 
+    END AS is_blocked
 
--- Join the last message for each friend pair
-    LEFT JOIN LATERAL (
+FROM friends f
+INNER JOIN users u1 ON f.sender_id = u1.id
+INNER JOIN users u2 ON f.receiver_id = u2.id
+
+-- Last message per friend pair
+LEFT JOIN LATERAL (
     SELECT pc.message, pc.created_at
     FROM personalchat pc
     WHERE (
@@ -30,13 +37,20 @@ export const Friends = async (req, res, next) => {
     )
     ORDER BY pc.created_at DESC
     LIMIT 1
-    ) pc ON true
+) pc ON true
 
--- Filter friends for the current user
-    WHERE f.sender_id = $1 OR f.receiver_id = $1
+-- Blocked users logic (either direction)
+LEFT JOIN blockedusers bu ON 
+    (bu.blocker_id = f.sender_id AND bu.blocked_id = f.receiver_id)
+    OR
+    (bu.blocker_id = f.receiver_id AND bu.blocked_id = f.sender_id)
 
--- Order by the latest message time (nulls last if no messages)
-    ORDER BY pc.created_at DESC NULLS LAST;
+-- Filter for the current user
+WHERE f.sender_id = $1 OR f.receiver_id = $1
+
+-- Sort by latest message time (nulls last)
+ORDER BY pc.created_at DESC NULLS LAST;
+
 
     `, [id]);
 
@@ -56,7 +70,7 @@ export const Friends = async (req, res, next) => {
 export const UpdateFriendsData = async (id) => {
   try {
     const FriendsData = await pool.query(`
-      SELECT 
+     SELECT 
     f.*,
     u1.id AS sender_user_id,
     u1.name AS sender_name,
@@ -65,13 +79,20 @@ export const UpdateFriendsData = async (id) => {
     u2.name AS receiver_name,
     u2.email AS receiver_email,
     pc.message AS last_message,
-    pc.created_at AS last_message_time
-    FROM friends f
-    INNER JOIN users u1 ON f.sender_id = u1.id
-    INNER JOIN users u2 ON f.receiver_id = u2.id
-  
-  -- Join the last message for each friend pair
-  LEFT JOIN LATERAL (
+    pc.created_at AS last_message_time,
+    bu.blocked_id AS Blocked_id,
+    -- Check if either user blocked the other
+    CASE 
+        WHEN bu.blocker_id IS NOT NULL THEN true 
+        ELSE false 
+    END AS is_blocked
+
+FROM friends f
+INNER JOIN users u1 ON f.sender_id = u1.id
+INNER JOIN users u2 ON f.receiver_id = u2.id
+
+-- Last message per friend pair
+LEFT JOIN LATERAL (
     SELECT pc.message, pc.created_at
     FROM personalchat pc
     WHERE (
@@ -81,13 +102,20 @@ export const UpdateFriendsData = async (id) => {
     )
     ORDER BY pc.created_at DESC
     LIMIT 1
-    ) pc ON true
-  
-  -- Filter friends for the current user
-    WHERE f.sender_id = $1 OR f.receiver_id = $1
-  
-  -- Order by the latest message time (nulls last if no messages)
-    ORDER BY pc.created_at DESC NULLS LAST;
+) pc ON true
+
+-- Blocked users logic (either direction)
+LEFT JOIN blockedusers bu ON 
+    (bu.blocker_id = f.sender_id AND bu.blocked_id = f.receiver_id)
+    OR
+    (bu.blocker_id = f.receiver_id AND bu.blocked_id = f.sender_id)
+
+-- Filter for the current user
+WHERE f.sender_id = $1 OR f.receiver_id = $1
+
+-- Sort by latest message time (nulls last)
+ORDER BY pc.created_at DESC NULLS LAST;
+
   
     `, [id]);
 
