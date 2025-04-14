@@ -35,13 +35,35 @@ export const BlockUserController = async (blockfriendid, userId) => {
 
 export const GetBlockUsers = async (req, res, next) => {
     try {
-        const { userid } = parseInt(req.query);
+        const { userid } = req.query;
         const BlockedUsers = await pool.query(`
-            SELECT * FROM blockedusers
-            WHERE blocker_id = $1
+            SELECT
+            blockedusers.id AS blockedusersid , 
+            blockedusers.blocker_id AS blockerid , 
+            blockedusers.blocked_id , 
+            users.name as blockerusername  FROM blockedusers 
+            INNER JOIN users ON blockedusers.blocked_id = users.id
+            WHERE blockedusers.blocker_id = $1
             ` , [userid])
         res.status(200).json({ message: "blocked users successfully fetched", BlockedUsers: BlockedUsers.rows, success: true })
     } catch (error) {
         res.status(404).json({ message: "error white fetching blocked users", success: false })
+    }
+}
+
+export const Unblockuser = async(selectedUser) => {
+    try {
+        const unblock = await pool.query(`
+            DELETE FROM blockedusers
+            WHERE id = $1
+            `,[selectedUser.blockedusersid])
+
+            const UpdatedUnblockUsers = await pool.query(`
+                SELECT * FROM blockedusers
+                WHERE blocker_id = $1
+                `,[selectedUser.blockerid])
+            return UpdatedUnblockUsers.rows
+    } catch (error) {
+        console.log(error)
     }
 }

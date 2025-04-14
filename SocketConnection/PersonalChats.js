@@ -1,4 +1,4 @@
-import { BlockUserController, CheckBlockController } from "../Controllers/SocketControllers/BlockUserControllers.js";
+import { BlockUserController, CheckBlockController, Unblockuser } from "../Controllers/SocketControllers/BlockUserControllers.js";
 import { UpdateFriendsData } from "../Controllers/SocketControllers/FriendsControllers.js";
 import { MarkAsReadMessages, UpdateMessageStatus } from "../Controllers/SocketControllers/GetUnreadMessages.js";
 import { GetPreviosChats, SendMessage } from "../Controllers/SocketControllers/PersonalChatscontrollers.js";
@@ -176,6 +176,19 @@ const PersonalChats = (io, socket, onlineUsers) => {
       console.log(error)
     }
 
+  })
+
+  socket.on('UnBlockFriend' , async(selectedUser) => {
+    try {
+      let id = selectedUser.blocked_id
+      const Unblock = await Unblockuser(selectedUser)
+      const FriendsData = await UpdateFriendsData(id)
+      socket.emit('UpdateBlockedList' , Unblock)
+      io.to(id.toString()).emit('UpdateFriendsData', FriendsData)
+      io
+    } catch (error) {
+      console.log(error)
+    }
   })
 
 
