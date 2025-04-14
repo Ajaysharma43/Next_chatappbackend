@@ -1,3 +1,4 @@
+import { BlockUserController, CheckBlockController } from "../Controllers/SocketControllers/BlockUserControllers.js";
 import { UpdateFriendsData } from "../Controllers/SocketControllers/FriendsControllers.js";
 import { MarkAsReadMessages, UpdateMessageStatus } from "../Controllers/SocketControllers/GetUnreadMessages.js";
 import { GetPreviosChats, SendMessage } from "../Controllers/SocketControllers/PersonalChatscontrollers.js";
@@ -143,6 +144,34 @@ const PersonalChats = (io, socket, onlineUsers) => {
       console.log(error)
     }
 
+  })
+
+  // this event is using to block the friend
+  socket.on('BlockUser', async (blockfriendid, userId) => {
+    const CheckBlock = await CheckBlockController(blockfriendid, userId)
+    let id = blockfriendid
+    let userid = userId
+    if (CheckBlock == true) {
+      const BlockUser = await BlockUserController(blockfriendid, userId)
+      let data = {
+        message: "user is blocked",
+        success: true,
+        Blockdata: BlockUser,
+        Blocked: true
+      }
+      io.to(id.toString()).emit('UpdateBlockedusers', data)
+      io.to(userid).emit("UpdateBlockedusers", data);
+    }
+    else {
+      let data = {
+        message: "user is already blocked",
+        success: false
+      }
+      io.to(id.toString()).emit('UpdateBlockedusers', data)
+      io.to(userid).emit("UpdateBlockedusers", data);
+
+
+    }
   })
 
 
