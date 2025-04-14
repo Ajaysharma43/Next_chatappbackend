@@ -7,6 +7,7 @@ import { GetRequestController } from '../Controllers/SocketControllers/GetReques
 import { Friends } from '../Controllers/SocketControllers/FriendsControllers.js';
 import { UnreadMessages } from '../Controllers/SocketControllers/UnreadMessagesControllers.js';
 import { DeleteFriend } from '../Controllers/SocketControllers/DeleteFriendControllers.js';
+import { GetBlockUsers } from '../Controllers/SocketControllers/BlockUserControllers.js';
 
 const route = express.Router()
 
@@ -16,11 +17,13 @@ route.post('/SendRequest', CheckFriends, CheckRequest, SendRequest)
 route.post('/AcceptRequest', CheckFriendRequest, AcceptFriendRequest, DeleteFriendRequest)
 route.post('/DeclineRequest', DeleteUser)
 route.post('/SearchUsers', GetAllUsers)
+route.post('/CheckFriends', Friends)
+route.post('/UnreadMessages', UnreadMessages)
+route.post('/DeleteFriend', DeleteFriend, Friends)
+
 route.get('/GetSingleUser', GetSingleUser)
-route.get('/GetRequests' , GetRequestController)
-route.post('/CheckFriends' , Friends)
-route.post('/UnreadMessages' , UnreadMessages)
-route.post('/DeleteFriend' , DeleteFriend , Friends)
+route.get('/GetRequests', GetRequestController)
+route.get('/GetBlockedFriends', GetBlockUsers)
 
 
 export default route;

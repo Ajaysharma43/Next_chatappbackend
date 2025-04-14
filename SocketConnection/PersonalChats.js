@@ -154,14 +154,15 @@ const PersonalChats = (io, socket, onlineUsers) => {
       let userid = userId
       if (CheckBlock == true) {
         const BlockUser = await BlockUserController(blockfriendid, userId)
+        const FriendsData = await UpdateFriendsData(parseInt(id))
         let data = {
           message: "user is blocked",
           success: true,
           Blockdata: BlockUser,
           Blocked: true
         }
-        io.to(id.toString()).emit('UpdateBlockedusers', data)
-        io.to(userid).emit("UpdateBlockedusers", data);
+        socket.emit('UpdateFriendsData', FriendsData)
+        io.to(id.toString()).emit('UpdateFriendsData', FriendsData)
       }
       else {
         let data = {

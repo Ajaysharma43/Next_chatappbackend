@@ -2,11 +2,17 @@ import pool from "../../Databaseconnection/DBConnection.js";
 
 export const GetAllUsers = async (req, res, next) => {
     try {
-        const { user } = req.body;
+        const { user, id } = req.body;
         const UserData = await pool.query(`
-        SELECT * FROM users
-        WHERE name ILIKE $1
-        `, [`%${user}%`])
+        SELECT * 
+FROM users
+WHERE name ILIKE $1
+AND id NOT IN (
+    SELECT blocker_id 
+    FROM blockedusers 
+    WHERE blocked_id = $2
+);
+        `, [`%${user}%`, id])
         res.status(200).json({ UserData: UserData.rows, success: true })
     } catch (error) {
         res.status(400).json({ error: error, success: false })
@@ -20,7 +26,12 @@ export const GetSingleUser = async (req, res) => {
         // 🔍 Get user details
         const userQuery = await pool.query(`
             SELECT * FROM users
-            WHERE id = $1`,
+            WHERE id = $1
+            AND id NOT IN (
+    SELECT blocker_id 
+    FROM blockedusers 
+    WHERE blocked_id = $1`
+            ,
             [userid]
         );
 
