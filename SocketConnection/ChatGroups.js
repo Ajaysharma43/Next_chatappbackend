@@ -46,23 +46,21 @@ const ChatGroups = (io, socket) => {
 
     })
 
-    socket.on('DeleteGroup' , async (groupId , userid) => {
+    socket.on('DeleteGroup', async (groupId, userid) => {
         try {
             const Members = await GetMembers(groupId)
             const DelGroup = await DeleteGroup(groupId)
-            if(DelGroup == true)
-            {
+            if (DelGroup == true) {
                 const GetGroups = await GetChatGroups(userid)
-                    socket.emit('SendGroups', GetGroups)
-                    console.log(Members)
-                    for (let i = 0; i < Members.length; i++) {
-                        io.to(Members[i].user_id).emit('SendGroups', GetGroups)
-                    }
+                socket.emit('SendGroups', GetGroups)
+                for (let i = 0; i < Members.length; i++) {
+                    io.to(Members[i].user_id).emit('SendGroups', GetGroups)
+                }
             }
         } catch (error) {
             console.log(error)
         }
-        
+
     })
 }
 

@@ -51,8 +51,11 @@ export const AddMembers = async (groupData, CreateGroup) => {
 export const GetChatGroups = async (userid) => {
     try {
         const GetGroups = await pool.query(`
-                SELECT * FROM groups
-                WHERE created_by = $1
+                SELECT DISTINCT ON (groups.id) groups.*
+                FROM groups
+                INNER JOIN group_members ON group_members.group_id = groups.id
+                WHERE groups.created_by = $1
+                OR group_members.user_id = $1;
             `, [userid])
         return GetGroups.rows
     } catch (error) {
@@ -65,22 +68,22 @@ export const GetMembers = async (groupId) => {
     try {
         const res = await pool.query(`
             SELECT group_members.user_id FROM groups
-INNER JOIN group_members ON group_members.group_id = groups.id
-WHERE groups.id = $1
+            INNER JOIN group_members ON group_members.group_id = groups.id
+            WHERE groups.id = $1
             `, [groupId])
-            return res.rows
+        return res.rows
     } catch (error) {
         console.log(error)
     }
 }
 
-export const DeleteGroup = async(groupId) => {
+export const DeleteGroup = async (groupId) => {
     try {
         const res = await pool.query(`
             DELETE FROM groups
             WHERE id = $1
-            `,[groupId])
-            return true
+            `, [groupId])
+        return true
     } catch (error) {
         console.log(error)
     }
