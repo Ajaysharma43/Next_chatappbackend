@@ -178,12 +178,12 @@ const PersonalChats = (io, socket, onlineUsers) => {
 
   })
 
-  socket.on('UnBlockFriend' , async(selectedUser) => {
+  socket.on('UnBlockFriend', async (selectedUser) => {
     try {
       let id = selectedUser.blocked_id
       const Unblock = await Unblockuser(selectedUser)
       const FriendsData = await UpdateFriendsData(id)
-      socket.emit('UpdateBlockedList' , Unblock)
+      socket.emit('UpdateBlockedList', Unblock)
       io.to(id.toString()).emit('UpdateFriendsData', FriendsData)
     } catch (error) {
       console.log(error)
@@ -192,7 +192,7 @@ const PersonalChats = (io, socket, onlineUsers) => {
 
 
   // Handle the typing event on the receiver side
-  socket.on('typing', (id , userid) => {
+  socket.on('typing', (id, userid) => {
     try {
       io.to(parseInt(id)).emit('isTyping', id)
       io.to(id.toString()).emit('typinguser', userid)

@@ -4,6 +4,7 @@ import {
   DeleteChat,
   RetriveChats,
 } from "../Controllers/SocketControllers/SocketControllers.js";
+import ChatGroups from "./ChatGroups.js";
 import OnlineFriends from "./CheckOnlineFriends.js";
 import PersonalChats from "./PersonalChats.js";
 
@@ -75,6 +76,12 @@ const Socketconnection = (io) => {
       PersonalChats(io, socket, { onlineUsers: [...onlineUsers.keys()] });
     } catch (err) {
       console.error("❌ Error in PersonalChats handler:", err);
+    }
+
+    try {
+      ChatGroups(io , socket)
+    } catch (error) {
+      console.log("error in the GroupChat : ",error)
     }
 
     // Delete message
