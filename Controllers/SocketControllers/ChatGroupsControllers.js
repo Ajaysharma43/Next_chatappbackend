@@ -80,6 +80,7 @@ export const DeleteGroup = async(groupId) => {
             DELETE FROM groups
             WHERE id = $1
             `,[groupId])
+            return true
     } catch (error) {
         console.log(error)
     }

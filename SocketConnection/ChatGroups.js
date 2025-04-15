@@ -54,8 +54,9 @@ const ChatGroups = (io, socket) => {
             {
                 const GetGroups = await GetChatGroups(userid)
                     socket.emit('SendGroups', GetGroups)
+                    console.log(Members)
                     for (let i = 0; i < Members.length; i++) {
-                        io.to(Members[i]).emit('SendGroups', GetGroups)
+                        io.to(Members[i].user_id).emit('SendGroups', GetGroups)
                     }
             }
         } catch (error) {
