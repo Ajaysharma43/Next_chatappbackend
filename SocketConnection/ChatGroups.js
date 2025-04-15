@@ -1,4 +1,5 @@
 import { AddMembers, CreateChatGroups, DeleteGroup, GetChatGroups, GetMembers } from "../Controllers/SocketControllers/ChatGroupsControllers.js";
+import { PreviousGroupChat, SendMessages } from "../Controllers/SocketControllers/GroupMessagesControllers.js";
 
 const ChatGroups = (io, socket) => {
 
@@ -18,6 +19,16 @@ const ChatGroups = (io, socket) => {
         } catch (error) {
             console.log(error)
         }
+    })
+
+    socket.on('JoinFriendsGroup', (id) => {
+        socket.join(id)
+        console.log(`new user has joined the room ${id}`)
+    })
+
+    socket.on('LeaveFriendsGroup', (id) => {
+        socket.leave(id)
+        console.log(`user has leave the room ${id}`)
     })
 
 
@@ -61,6 +72,17 @@ const ChatGroups = (io, socket) => {
             console.log(error)
         }
 
+    })
+
+    socket.on('SendGroupMessages', async (message, id, userid) => {
+        const SaveMessage = await SendMessages(message, id, userid)
+        io.to(id).emit('RecieveMessages', SaveMessage)
+    })
+
+    socket.on('PreviousGroupChats', async (id) => {
+        const PreviousGroupChats = await PreviousGroupChat(id)
+        let message = PreviousGroupChats
+        socket.emit('GetPreviosGroupChats', message)
     })
 }
 
