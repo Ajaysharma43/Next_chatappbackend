@@ -7,6 +7,7 @@ import AuthRouter from './Routes/AuthRoutes.js'
 import NavRoutes from './Routes/NavRoutes.js'
 import DashboardRoutes from './Routes/DashboardRoutes.js'
 import ChatAppRoutes from './Routes/AddFriendsRoutes.js'
+import GroupChatRoutes from './Routes/ChatGroupsSlice.js'
 import env from 'dotenv'
 import OnlineFriends from './SocketConnection/CheckOnlineFriends.js';
 
@@ -39,6 +40,7 @@ app.use('/Auth', AuthRouter)
 app.use('/Nav', NavRoutes)
 app.use('/Dashboard', DashboardRoutes)
 app.use('/Chatapp', ChatAppRoutes)
+app.use('/GroupChat' , GroupChatRoutes)
 
 // the socket connection 
 Socketconnection(io)
