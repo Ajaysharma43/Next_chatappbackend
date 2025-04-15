@@ -16,7 +16,6 @@ export const CreateChatGroups = async (groupData) => {
 
 export const AddMembers = async (groupData, CreateGroup) => {
     try {
-        console.log("this is add members : ", CreateGroup)
         for (let i = 0; i < groupData.members.length; i++) {
             const AddMembersToGroup = await pool.query(`
                 INSERT INTO group_members(user_id , group_id)
@@ -35,7 +34,7 @@ export const GetChatGroups = async (userid) => {
             SELECT * FROM groups
             WHERE created_by = $1
             `, [userid])
-            return GetGroups.rows
+        return GetGroups.rows
     } catch (error) {
         console.log(error)
     }
