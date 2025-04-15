@@ -60,3 +60,27 @@ export const GetChatGroups = async (userid) => {
     }
 
 }
+
+export const GetMembers = async (groupId) => {
+    try {
+        const res = await pool.query(`
+            SELECT group_members.user_id FROM groups
+INNER JOIN group_members ON group_members.group_id = groups.id
+WHERE groups.id = $1
+            `, [groupId])
+            return res.rows
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+export const DeleteGroup = async(groupId) => {
+    try {
+        const res = await pool.query(`
+            DELETE FROM groups
+            WHERE id = $1
+            `,[groupId])
+    } catch (error) {
+        console.log(error)
+    }
+}

@@ -1,4 +1,4 @@
-import { AddMembers, CreateChatGroups, GetChatGroups } from "../Controllers/SocketControllers/ChatGroupsControllers.js";
+import { AddMembers, CreateChatGroups, DeleteGroup, GetChatGroups, GetMembers } from "../Controllers/SocketControllers/ChatGroupsControllers.js";
 
 const ChatGroups = (io, socket) => {
 
@@ -44,6 +44,24 @@ const ChatGroups = (io, socket) => {
             console.log(error)
         }
 
+    })
+
+    socket.on('DeleteGroup' , async (groupId , userid) => {
+        try {
+            const Members = await GetMembers(groupId)
+            const DelGroup = await DeleteGroup(groupId)
+            if(DelGroup == true)
+            {
+                const GetGroups = await GetChatGroups(userid)
+                    socket.emit('SendGroups', GetGroups)
+                    for (let i = 0; i < Members.length; i++) {
+                        io.to(Members[i]).emit('SendGroups', GetGroups)
+                    }
+            }
+        } catch (error) {
+            console.log(error)
+        }
+        
     })
 }
 
