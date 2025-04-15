@@ -32,11 +32,6 @@ const ChatGroups = (io, socket) => {
     })
 
 
-    socket.on('GetGroups', async (userid) => {
-        const GetGroups = await GetChatGroups(userid)
-        socket.emit('Groups',)
-    })
-
     socket.on('CreateGroup', async (groupData) => {
         try {
             const CreateGroup = await CreateChatGroups(groupData)
