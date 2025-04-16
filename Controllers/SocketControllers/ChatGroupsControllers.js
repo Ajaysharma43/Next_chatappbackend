@@ -128,3 +128,18 @@ export const GetMembersDetails = async (id) => {
         console.log(error)
     }
 }
+
+export const UpdateGroupDetails = async (values) => {
+    try {
+        const Update = await pool.query(`
+            UPDATE groups
+            SET name = $1 , description = $2
+            WHERE id = $3
+            RETURNING *
+            `, [values.GroupName, values.GroupDescription, values.GroupId])
+        return Update.rows
+    } catch (error) {
+        console.log(error)
+    }
+
+}

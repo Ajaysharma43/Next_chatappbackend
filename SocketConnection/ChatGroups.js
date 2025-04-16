@@ -1,4 +1,4 @@
-import { AddMembers, CreateChatGroups, DeleteGroup, GetChatGroups, GetCurrentGroup, GetMembers, GetMembersDetails } from "../Controllers/SocketControllers/ChatGroupsControllers.js";
+import { AddMembers, CreateChatGroups, DeleteGroup, GetChatGroups, GetCurrentGroup, GetMembers, GetMembersDetails, UpdateGroupDetails } from "../Controllers/SocketControllers/ChatGroupsControllers.js";
 import { DeleteMessage, PreviousGroupChat, SendMessages } from "../Controllers/SocketControllers/GroupMessagesControllers.js";
 
 const ChatGroups = (io, socket) => {
@@ -107,11 +107,15 @@ const ChatGroups = (io, socket) => {
         try {
             const GetGroupDetails = await GetCurrentGroup(id)
             const GetMembersDetail = await GetMembersDetails(id)
-            socket.emit('SendGroupDetails' , GetGroupDetails , GetMembersDetail)
+            socket.emit('SendGroupDetails', GetGroupDetails, GetMembersDetail)
         } catch (error) {
             console.log(error)
         }
+    })
 
+    socket.on('UpdateGroupDetails' , async (values) => {
+        const Update = await UpdateGroupDetails(values)
+        io.emit('UpdatedGroupDetails' , Update , values)
     })
 }
 
