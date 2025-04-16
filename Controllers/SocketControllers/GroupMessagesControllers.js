@@ -29,7 +29,8 @@ export const PreviousGroupChat = async (id) => {
             group_messages.group_id, 
             group_messages.sender_id, 
             group_messages.content, 
-            group_messages.sent_at 
+            group_messages.sent_at,
+            group_messages.notifications
             FROM group_messages
             INNER JOIN users ON users.id = group_messages.sender_id
             WHERE group_messages.group_id = $1

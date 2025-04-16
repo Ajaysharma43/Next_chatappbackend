@@ -1,4 +1,4 @@
-import { AddMembers, CreateChatGroups, DeleteGroup, GetChatGroups, GetCurrentGroup, GetMembers, GetMembersDetails, UpdateGroupDetails } from "../Controllers/SocketControllers/ChatGroupsControllers.js";
+import { AddMembers, CreateChatGroups, CreateNotification, DeleteGroup, GetChatGroups, GetCurrentGroup, GetMembers, GetMembersDetails, UpdateGroupDetails } from "../Controllers/SocketControllers/ChatGroupsControllers.js";
 import { DeleteMessage, PreviousGroupChat, SendMessages } from "../Controllers/SocketControllers/GroupMessagesControllers.js";
 
 const ChatGroups = (io, socket) => {
@@ -113,9 +113,19 @@ const ChatGroups = (io, socket) => {
         }
     })
 
-    socket.on('UpdateGroupDetails' , async (values) => {
-        const Update = await UpdateGroupDetails(values)
-        io.emit('UpdatedGroupDetails' , Update , values)
+    socket.on('UpdateGroupDetails', async (values, id, username) => {
+        try {
+            const Message = `the group details are updated by the ${username}`
+
+            const Update = await UpdateGroupDetails(values)
+            const Notification = await CreateNotification(values, id, Message)
+
+            io.emit('UpdateNotification', Notification)
+            io.emit('UpdatedGroupDetails', Update, values)
+        } catch (error) {
+            console.log(error)
+        }
+
     })
 }
 
