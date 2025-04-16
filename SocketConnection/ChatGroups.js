@@ -71,7 +71,7 @@ const ChatGroups = (io, socket) => {
 
     socket.on('SendGroupMessages', async (message, id, userid) => {
         const SaveMessage = await SendMessages(message, id, userid)
-        io.to(id).emit('RecieveMessages', SaveMessage)
+        io.emit('RecieveMessages', SaveMessage)
     })
 
     socket.on('PreviousGroupChats', async (id) => {
