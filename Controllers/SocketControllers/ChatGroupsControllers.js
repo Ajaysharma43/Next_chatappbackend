@@ -144,14 +144,26 @@ export const UpdateGroupDetails = async (values) => {
 }
 
 
-export const CreateNotification = async (values , id , Message) => {
+export const CreateNotification = async (values, id, Message) => {
     try {
         const Notification = await pool.query(`
             INSERT INTO group_messages(group_id , sender_id , content , notifications)
             VALUES ($1 , $2 ,$3 ,$4)
             RETURNING *
-            `,[values.GroupId , id , Message , true])
-            return Notification.rows
+            `, [values.GroupId, id, Message, true])
+        return Notification.rows
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+export const KickUserFromGroup = async (userDetails) => {
+    try {
+        const Del = await pool.query(`
+            DELETE FROM group_members
+            WHERE id = $1
+            `, [userDetails.id])
+        return true
     } catch (error) {
         console.log(error)
     }
