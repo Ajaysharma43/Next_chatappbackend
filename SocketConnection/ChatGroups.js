@@ -94,9 +94,9 @@ const ChatGroups = (io, socket) => {
 
     })
 
-    socket.on('GroupUserTyping' , (typingUserId) => {
-        socket.emit('StartGroupTyping' , typingUserId)
-    })
+    socket.on("GroupUserTyping", ({ id, username, groupId }) => {
+        io.emit("StartGroupTyping", { id, username });
+    });
 }
 
 export default ChatGroups;
