@@ -1,5 +1,5 @@
 import { AddMembers, CreateChatGroups, DeleteGroup, GetChatGroups, GetMembers } from "../Controllers/SocketControllers/ChatGroupsControllers.js";
-import { PreviousGroupChat, SendMessages } from "../Controllers/SocketControllers/GroupMessagesControllers.js";
+import { DeleteMessage, PreviousGroupChat, SendMessages } from "../Controllers/SocketControllers/GroupMessagesControllers.js";
 
 const ChatGroups = (io, socket) => {
 
@@ -78,6 +78,20 @@ const ChatGroups = (io, socket) => {
         const PreviousGroupChats = await PreviousGroupChat(id)
         let message = PreviousGroupChats
         socket.emit('GetPreviosGroupChats', message)
+    })
+
+    socket.on('DeleteGroupMessage' , async (messages) => {
+        try {
+            let id = messages.group_id
+            const Del = await DeleteMessage(messages)
+            const res = await PreviousGroupChat(id)
+            let message = res
+            io.emit('GetPreviosGroupChats', message)  
+        } catch (error) {
+           console.log(error) 
+        }
+        
+        
     })
 }
 

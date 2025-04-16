@@ -16,10 +16,29 @@ export const SendMessages = async (message, id, userid) => {
 export const PreviousGroupChat = async (id) => {
     try {
         const res = await pool.query(`
-            SELECT * FROM group_messages
-            WHERE group_id = $1
+            SELECT  
+            users.name,
+            group_messages.id, 
+            group_messages.group_id, 
+            group_messages.sender_id, 
+            group_messages.content, 
+            group_messages.sent_at 
+            FROM group_messages
+            INNER JOIN users ON users.id = group_messages.sender_id
+            WHERE group_messages.group_id = $1
             `, [id])
         return res.rows
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+export const DeleteMessage = async (messages) => {
+    try {
+        const res = await pool.query(`
+            DELETE FROM group_messages
+            WHERE id = $1
+            `, [messages.id])
     } catch (error) {
         console.log(error)
     }
