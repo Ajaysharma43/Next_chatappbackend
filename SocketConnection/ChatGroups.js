@@ -80,18 +80,22 @@ const ChatGroups = (io, socket) => {
         socket.emit('GetPreviosGroupChats', message)
     })
 
-    socket.on('DeleteGroupMessage' , async (messages) => {
+    socket.on('DeleteGroupMessage', async (messages) => {
         try {
             let id = messages.group_id
             const Del = await DeleteMessage(messages)
             const res = await PreviousGroupChat(id)
             let message = res
-            io.emit('GetPreviosGroupChats', message)  
+            io.emit('GetPreviosGroupChats', message)
         } catch (error) {
-           console.log(error) 
+            console.log(error)
         }
-        
-        
+
+
+    })
+
+    socket.on('GroupUserTyping' , (typingUserId) => {
+        socket.emit('StartGroupTyping' , typingUserId)
     })
 }
 
