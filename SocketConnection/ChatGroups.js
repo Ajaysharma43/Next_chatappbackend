@@ -1,4 +1,4 @@
-import { AddMembers, CreateChatGroups, DeleteGroup, GetChatGroups, GetMembers } from "../Controllers/SocketControllers/ChatGroupsControllers.js";
+import { AddMembers, CreateChatGroups, DeleteGroup, GetChatGroups, GetCurrentGroup, GetMembers, GetMembersDetails } from "../Controllers/SocketControllers/ChatGroupsControllers.js";
 import { DeleteMessage, PreviousGroupChat, SendMessages } from "../Controllers/SocketControllers/GroupMessagesControllers.js";
 
 const ChatGroups = (io, socket) => {
@@ -95,8 +95,24 @@ const ChatGroups = (io, socket) => {
     })
 
     socket.on("GroupUserTyping", ({ id, username, groupId }) => {
-        io.emit("StartGroupTyping", { id, username });
+        try {
+            io.emit("StartGroupTyping", { id, username, groupId });
+        } catch (error) {
+            console.log(error)
+        }
+
     });
+
+    socket.on("GetGroupDetails", async (id) => {
+        try {
+            const GetGroupDetails = await GetCurrentGroup(id)
+            const GetMembersDetail = await GetMembersDetails(id)
+            socket.emit('SendGroupDetails' , GetGroupDetails , GetMembersDetail)
+        } catch (error) {
+            console.log(error)
+        }
+
+    })
 }
 
 export default ChatGroups;

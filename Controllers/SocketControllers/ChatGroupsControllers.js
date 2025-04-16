@@ -88,3 +88,43 @@ export const DeleteGroup = async (groupId) => {
         console.log(error)
     }
 }
+
+export const GetCurrentGroup = async (id) => {
+    try {
+        const CurrentGroupDetails = await pool.query(`
+            SELECT 
+            groups.id , 
+            groups.name , 
+            groups.description , 
+            groups.created_by , 
+            groups.created_at , 
+            users.name AS username 
+            FROM groups
+            INNER JOIN users ON users.id = groups.created_by
+            WHERE groups.id = $1
+            `, [id])
+
+        return CurrentGroupDetails.rows
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+export const GetMembersDetails = async (id) => {
+    try {
+        const MembersDetails = await pool.query(`
+            SELECT group_members.id,
+            group_members.user_id,
+            group_members.group_id,
+            group_members.joined_at,
+            group_members.role,
+            users.name
+            FROM group_members
+            INNER JOIN users ON users.id = group_members.user_id
+            WHERE group_id = $1
+            `, [id])
+        return MembersDetails.rows
+    } catch (error) {
+        console.log(error)
+    }
+}
