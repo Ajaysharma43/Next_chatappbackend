@@ -1,6 +1,7 @@
 import { BlockUserController, CheckBlockController, Unblockuser } from "../Controllers/SocketControllers/BlockUserControllers.js";
 import { UpdateFriendsData } from "../Controllers/SocketControllers/FriendsControllers.js";
 import { MarkAsReadMessages, UpdateMessageStatus } from "../Controllers/SocketControllers/GetUnreadMessages.js";
+import { NotificationsHandler } from "../Controllers/SocketControllers/NotificationControllers.js";
 import { GetPreviosChats, SendMessage } from "../Controllers/SocketControllers/PersonalChatscontrollers.js";
 import { DeletePersonalChat } from "../Controllers/SocketControllers/SocketControllers.js";
 import { UnreadMessage } from "../Controllers/SocketControllers/UnreadMessagesControllers.js";
@@ -147,13 +148,16 @@ const PersonalChats = (io, socket, onlineUsers) => {
   })
 
   // this event is using to block the friend
-  socket.on('BlockUser', async (blockfriendid, userId) => {
+  socket.on('BlockUser', async (blockfriendid, userId , username) => {
     try {
+      let sender_id , receiver_id;
+      const Message = `You can't message ${username} right now — you've been blocked.`;
       const CheckBlock = await CheckBlockController(blockfriendid, userId)
       let id = blockfriendid
       let userid = userId
       if (CheckBlock == true) {
         const BlockUser = await BlockUserController(blockfriendid, userId)
+        const Notification = await NotificationsHandler(sender_id = userid , receiver_id = blockfriendid , Message)
         const FriendsData = await UpdateFriendsData(parseInt(id))
         let data = {
           message: "user is blocked",
@@ -178,17 +182,28 @@ const PersonalChats = (io, socket, onlineUsers) => {
 
   })
 
-  socket.on('UnBlockFriend', async (selectedUser) => {
+  socket.on('UnBlockFriend', async (selectedUser, username) => {
     try {
-      let id = selectedUser.blocked_id
-      const Unblock = await Unblockuser(selectedUser)
-      const FriendsData = await UpdateFriendsData(id)
-      socket.emit('UpdateBlockedList', Unblock)
-      io.to(id.toString()).emit('UpdateFriendsData', FriendsData)
+      let id = selectedUser.blocked_id;
+      let userid = selectedUser.blockerid;
+  
+      const Unblock = await Unblockuser(selectedUser);
+      const FriendsData = await UpdateFriendsData(id);
+  
+      const Message = `✅ ${username} has unblocked you. You can now chat freely again! 🎉`;
+  
+      // Send a notification to the unblocked user
+      await NotificationsHandler(userid, id, Message);
+  
+      // Emit updated data to both users
+      socket.emit('UpdateBlockedList', Unblock);
+      io.to(id.toString()).emit('UpdateFriendsData', FriendsData);
+  
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-  })
+  });
+  
 
 
   // Handle the typing event on the receiver side

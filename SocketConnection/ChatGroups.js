@@ -1,5 +1,6 @@
 import { AddFriendsToGroup, AddMembers, CreateChatGroups, CreateNotification, DeleteGroup, GetChatGroups, GetCurrentGroup, GetFriendsToAdd, GetMembers, GetMembersDetails, KickUserFromGroup, UpdateGroupDetails } from "../Controllers/SocketControllers/ChatGroupsControllers.js";
 import { DeleteMessage, PreviousGroupChat, SendMessages } from "../Controllers/SocketControllers/GroupMessagesControllers.js";
+import { NotificationsHandler } from "../Controllers/SocketControllers/NotificationControllers.js";
 
 const ChatGroups = (io, socket) => {
 
@@ -129,21 +130,31 @@ const ChatGroups = (io, socket) => {
     })
     socket.on('KickUserFromGroup', async (userDetails, username, id) => {
         try {
-            const Message = `the user ${userDetails.name} has been removed by ${username}`
-            const values = {
-                GroupId: userDetails.group_id
-            }
-            const Del = await KickUserFromGroup(userDetails)
-            const Notification = await CreateNotification(values, id, Message)
-            const GetGroupDetails = await GetCurrentGroup(id = values.GroupId)
-            const GetMembersDetail = await GetMembersDetails(id = values.GroupId)
+            const groupId = userDetails.group_id;
+            const values = { GroupId: groupId };
 
-            io.emit('SendGroupDetails', GetGroupDetails, GetMembersDetail)
-            io.emit('UpdateNotification', Notification)
+            const groupMessage = `👤 ${userDetails.name} has been removed from the group by ${username}`;
+            const personalMessage = `🚫 You have been removed from the group by ${username}`;
+
+            // Remove user
+            const Del = await KickUserFromGroup(userDetails);
+
+            // Notify group
+            const GroupNotification = await CreateNotification(values, id, groupMessage);
+            io.emit('UpdateNotification', GroupNotification);
+
+            // Notify the user who was kicked
+            await NotificationsHandler(id, userDetails.user_id, personalMessage);
+
+            // Send updated group details
+            const GetGroupDetails = await GetCurrentGroup(groupId);
+            const GetMembersDetail = await GetMembersDetails(groupId);
+            io.emit('SendGroupDetails', GetGroupDetails, GetMembersDetail);
         } catch (error) {
-            console.log(error)
+            console.log(error);
         }
-    })
+    });
+
 
     socket.on('GetFriendsToAdd', async (userid, id) => {
         const Friends = await GetFriendsToAdd(userid, id)
@@ -152,26 +163,36 @@ const ChatGroups = (io, socket) => {
 
     socket.on("AddFriendsToGroup", async (payload, userId, group_id, username) => {
         try {
-            let id;
-            let Message
-            let values = {
-                GroupId: group_id
+            let messageToGroup;
+            const values = { GroupId: group_id };
+
+            if (payload.length === 1) {
+                messageToGroup = `🎉 ${payload[0].name} was added to the group by ${username}`;
+            } else {
+                messageToGroup = `👥 ${payload.length} new users were added to the group by ${username}`;
             }
-            if (payload.length == 1) {
-                Message = `New User is added to the group by ${username}`
-            } 
-            else {
-                Message = `New Users added to the group by ${username}`
+
+            // Add users to group
+            const AddFriends = await AddFriendsToGroup(payload);
+
+            // Notify group
+            const Notification = await CreateNotification(values, userId, messageToGroup);
+            io.emit('UpdateNotification', Notification);
+
+            // Notify each new user
+            for (let member of payload) {
+                const personalMessage = `✅ You've been added to a new group by ${username}`;
+                await NotificationsHandler(userId, member.user_id, personalMessage);
             }
-            const AddFriends = await AddFriendsToGroup(payload)
-            const GetMembersDetail = await GetMembersDetails(id = group_id)
-            const Notification = await CreateNotification(values, id = userId, Message)
-            io.emit('SentNewMembersOfTheGroup' , GetMembersDetail , group_id)
-            io.emit('UpdateNotification', Notification)
+
+            // Emit new members
+            const GetMembersDetail = await GetMembersDetails(group_id);
+            io.emit('SentNewMembersOfTheGroup', GetMembersDetail, group_id);
         } catch (error) {
-            console.log(error)
+            console.log(error);
         }
-    })
+    });
+
 }
 
 
