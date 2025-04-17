@@ -11,4 +11,4 @@ export const NotificationControllers = async (req, res, next) => {
     } catch (error) {
         res.status(404).json({ message: "error while getting the notifications", success: false , error : error})
     }
-}
+} 
