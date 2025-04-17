@@ -168,3 +168,51 @@ export const KickUserFromGroup = async (userDetails) => {
         console.log(error)
     }
 }
+
+export const GetFriendsToAdd = async (userid, id) => {
+    try {
+        const UsersData = await pool.query(`
+            SELECT 
+    Friends.*, 
+    sender_user.name AS sender_name, 
+    receiver_user.name AS receiver_name
+FROM Friends
+-- Join to get sender name
+JOIN users AS sender_user ON sender_user.id = Friends.sender_id
+-- Join to get receiver name
+JOIN users AS receiver_user ON receiver_user.id = Friends.receiver_id
+WHERE 
+    (Friends.sender_id = $1 OR Friends.receiver_id = $1)
+    AND NOT EXISTS (
+        SELECT 1 
+        FROM group_members 
+        WHERE 
+            group_id = $2
+            AND (
+                group_members.user_id = Friends.sender_id 
+                OR group_members.user_id = Friends.receiver_id
+            )
+    );
+
+            `,[userid, id])
+            return UsersData.rows
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+export const AddFriendsToGroup = async(payload) => {
+    try {
+        for(let i = 0 ; i < payload.length ; i++)
+        {
+            const AddFriends = await pool.query(`
+                INSERT INTO group_members(user_id , group_id)
+                VALUES($1 , $2)
+                `,[payload[i].user_id , payload[i].group_id])
+        }
+        return true
+        
+    } catch (error) {
+        console.log(error)
+    }
+}
