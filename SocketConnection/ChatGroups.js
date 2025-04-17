@@ -167,7 +167,7 @@ const ChatGroups = (io, socket) => {
             const values = { GroupId: group_id };
 
             if (payload.length === 1) {
-                messageToGroup = `🎉 ${payload[0].name} was added to the group by ${username}`;
+                messageToGroup = `🎉 new User was added to the group by ${username}`;
             } else {
                 messageToGroup = `👥 ${payload.length} new users were added to the group by ${username}`;
             }
