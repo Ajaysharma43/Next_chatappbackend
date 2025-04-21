@@ -22,10 +22,8 @@ export const SocialAuth = async (req, res, next) => {
 
 export const CheckUser = async (userid) => {
     try {
-        console.log(userid)
-        console.log("Checking if user already exists...");
         const user = await pool.query(
-                `SELECT * FROM users WHERE socialid = $1`,
+            `SELECT * FROM users WHERE socialid = $1`,
             [userid]
         );
 
@@ -51,7 +49,6 @@ export const CreateNewUser = async (req, res, next) => {
         // Check if user already exists
         const existingUser = await CheckUser(userid);
         if (existingUser > 0) {
-            console.log("user already existed")
             next()
         }
         else {
@@ -61,8 +58,6 @@ export const CreateNewUser = async (req, res, next) => {
                 VALUES ($1, $2, $3, $4) RETURNING id`,
                 [payload.name, payload.email, payload.email_verified, userid]
             );
-
-            console.log("New user created");
             next()
         }
     } catch (error) {
@@ -75,7 +70,7 @@ export const GenerateSocialToken = async (req, res, next) => {
     try {
         const { userid } = req.body;
         const user = await pool.query(
-                `SELECT * FROM users WHERE socialid = $1`,
+            `SELECT * FROM users WHERE socialid = $1`,
             [userid]
         );
         const UserData = user.rows.find((item) => item.socialid === userid)

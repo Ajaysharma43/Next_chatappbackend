@@ -14,7 +14,6 @@ export const GetGroups = async (req, res, next) => {
         `, [userid])
         res.status(200).json({ message: "Groups data is successfully fetched", Groups: Groups.rows, success: true })
     } catch (error) {
-        console.log(error)
         res.status(403).json({ message: "Failed to fetched groups data ", success: false })
     }
 

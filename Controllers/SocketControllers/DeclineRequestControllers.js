@@ -22,7 +22,6 @@ export const DeleteUser = async (req, res, next) => {
         console.log(Finduser.rowCount)
         // Check if the request was deleted
         if (Finduser.rowCount == 0) {
-            console.log("request declined successfully")
             let relationshipStatus = "no_relation";
             res.status(200).json({
                 message: "Request is successfully deleted",

@@ -16,7 +16,6 @@ export const CheckFriends = async (req, res, next) => {
         if (result.rowCount > 0) {
             return res.status(400).json({ message: "Users are already friends", success: false });
         }
-        console.log("success")
         next(); // Proceed if they are not friends
     } catch (error) {
         res.status(500).json({ error: error.message, success: false });
