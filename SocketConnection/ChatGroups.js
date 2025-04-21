@@ -7,7 +7,6 @@ const ChatGroups = (io, socket) => {
     socket.on('JoinGroups', (id) => {
         try {
             socket.join(id)
-            console.log(`user with the id : ${id} has joined the room`)
         } catch (error) {
             console.log(error)
         }
@@ -16,7 +15,6 @@ const ChatGroups = (io, socket) => {
     socket.on('LeaveGroups', (userid) => {
         try {
             socket.leave(userid)
-            console.log(`user with the id : ${userid} has leave the room`)
         } catch (error) {
             console.log(error)
         }
@@ -24,12 +22,10 @@ const ChatGroups = (io, socket) => {
 
     socket.on('JoinFriendsGroup', (id) => {
         socket.join(id)
-        console.log(`new user has joined the room ${id}`)
     })
 
     socket.on('LeaveFriendsGroup', (id) => {
         socket.leave(id)
-        console.log(`user has leave the room ${id}`)
     })
 
 
