@@ -12,32 +12,24 @@ let onlineUsers = new Map(); // userId -> socketId
 
 const Socketconnection = (io) => {
   io.on("connection", async (socket) => {
-    console.log("✅ A user connected:", socket.id);
-
     try {
-      // Send all previous chats
       const chats = await RetriveChats();
       socket.emit("GetPrevChats", { chats });
-
-      // Welcome message
       socket.emit("connection", { message: "Welcome to the server!" });
     } catch (err) {
       console.error("❌ Error sending previous chats or welcome:", err);
     }
 
-    // User online
     socket.on("user-online", (userId) => {
       try {
         if (!userId) return;
         onlineUsers.set(userId, socket.id);
-        console.log(`🟢 User ${userId} is online as ${socket.id}`);
         io.emit("update-online-status", [...onlineUsers.keys()]);
       } catch (err) {
         console.error("❌ Error setting user online:", err);
       }
     });
 
-    // Message
     socket.on("message", async (data) => {
       try {
         const updatedMessages = await AddChat(data);
@@ -47,7 +39,6 @@ const Socketconnection = (io) => {
       }
     });
 
-    // Typing
     socket.on("typing", (user) => {
       try {
         socket.broadcast.emit("userTyping", user);
@@ -64,14 +55,12 @@ const Socketconnection = (io) => {
       }
     });
 
-    // Online friends logic
     try {
       OnlineFriends(socket, onlineUsers);
     } catch (err) {
       console.error("❌ Error in OnlineFriends handler:", err);
     }
 
-    // Personal chats logic
     try {
       PersonalChats(io, socket, { onlineUsers: [...onlineUsers.keys()] });
     } catch (err) {
@@ -79,12 +68,11 @@ const Socketconnection = (io) => {
     }
 
     try {
-      ChatGroups(io , socket)
+      ChatGroups(io, socket);
     } catch (error) {
-      console.log("error in the GroupChat : ",error)
+      console.error("❌ Error in the GroupChat:", error);
     }
 
-    // Delete message
     socket.on("deleteMessage", async (id) => {
       try {
         const updatedData = await DeleteChat(id);
@@ -94,33 +82,24 @@ const Socketconnection = (io) => {
       }
     });
 
-    // Check if a user is online manually
     socket.on("IsUserOnline", async ({ id }) => {
       try {
-        console.log("🔍 Checking online for:", id);
         const isOnline = onlineUsers.has(id);
         const socketId = onlineUsers.get(id) || null;
         const userData = await CheckOnline(id);
-        socket.emit("UserOnlineStatus", { id, isOnline, socketId, userData });
       } catch (err) {
         console.error("❌ Error checking user online status:", err);
       }
     });
 
-    // Disconnect
     socket.on("disconnect", () => {
       try {
-        console.log("❌ A user disconnected:", socket.id);
-
         for (const [userId, sid] of onlineUsers) {
           if (sid === socket.id) {
-            console.log(`🔴 User ${userId} is offline`);
             onlineUsers.delete(userId);
             break;
           }
         }
-
-        // Broadcast updated online users
         io.emit("update-online-status", [...onlineUsers.keys()]);
       } catch (err) {
         console.error("❌ Error during disconnect:", err);
