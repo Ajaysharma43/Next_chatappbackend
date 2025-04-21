@@ -173,8 +173,6 @@ const PersonalChats = (io, socket, onlineUsers) => {
           message: "user is already blocked",
           success: false
         }
-        io.to(id.toString()).emit('UpdateBlockedusers', data)
-        io.to(userid).emit("UpdateBlockedusers", data);
       }
     } catch (error) {
       console.log(error)
