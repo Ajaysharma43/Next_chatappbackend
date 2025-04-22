@@ -5,7 +5,6 @@ import { GenerateOtp } from '../Controllers/AuthControllers/OtpVerifyController.
 import { VerifyOtp } from '../Controllers/AuthControllers/VerifyOpt.js';
 import { GenerateToken, ValidateEmail, ValidateLoginDetails } from '../Controllers/AuthControllers/LoginControllers.js';
 import { CreateNewUser, SocialAuth, GenerateSocialToken } from '../Controllers/AuthControllers/SocialMediaLoginController.js';
-import { CheckGithubUser, CreateGithubUser, GenerateGithubToken } from '../Controllers/AuthControllers/Githubauthcontrollers.js';
 
 const router = express.Router();
 
@@ -17,6 +16,5 @@ router.post('/OTPgenerate', GenerateOtp)
 router.post('/VerifyOtp', VerifyOtp)
 router.post('/Login', ValidateEmail, ValidateLoginDetails, GenerateToken)
 router.post('/SocialAuth', SocialAuth, CreateNewUser, GenerateSocialToken)
-router.post('/GithubAuth', CheckGithubUser, CreateGithubUser, GenerateGithubToken)
 
 export default router

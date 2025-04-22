@@ -1,59 +1,102 @@
 import pool from "../../Databaseconnection/DBConnection.js";
-import jwt from 'jsonwebtoken'
+import jwt from 'jsonwebtoken';
 
-export const CheckGithubUser = async (req, res, next) => {
+/**
+ * Check if a GitHub user exists in the DB and generate JWT tokens if found.
+ */
+export const checkGithubUser = async (token) => {
     try {
-        const { token } = req.body;
-        const FindUser = await pool.query(`
-            SELECT * FROM users
-            WHERE socialid = $1
-            `, [token.id])
-        if (FindUser.rowCount == 1) {
-            const payload = { id: FindUser.rows[0].id, username: FindUser.rows[0].name , socialauthenticated:  FindUser.rows[0].socialauthenticated , profile :  FindUser.rows[0].profilepic , role : FindUser.rows[0].roles}
-            const AccessToken = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '2h' })
-            const RefreshToken = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '7d' })
-            res.status(200).json({ message: "user is already existed", success: true, AccessToken: AccessToken, RefreshToken: RefreshToken })
-        }
-        else {
-            next()
+        const result = await pool.query(
+            `SELECT * FROM users WHERE socialid = $1`,
+            [token.id]
+        );
+
+        if (result.rowCount === 1) {
+            const user = result.rows[0];
+            const payload = {
+                id: user.id,
+                username: user.name,
+                socialauthenticated: user.socialauthenticated,
+                profile: user.profilepic,
+                role: user.roles,
+            };
+
+            const accessToken = jwt.sign(payload, process.env.JWT_SECRET, {
+                expiresIn: '2h',
+            });
+            const refreshToken = jwt.sign(payload, process.env.JWT_SECRET, {
+                expiresIn: '7d',
+            });
+
+            return {
+                userExists: true,
+                accessToken,
+                refreshToken,
+                user: payload,
+            };
+        } else {
+            return { userExists: false };
         }
     } catch (error) {
-        res.status(404).json({ message: "error occoured while finding a user", success: false })
+        throw new Error('Error occurred while finding a GitHub user');
     }
-}
+};
 
-
-export const CreateGithubUser = async (req, res, next) => {
+/**
+ * Create a new GitHub user in the DB.
+ */
+export const createGithubUser = async (token) => {
     try {
-        const { token } = req.body;
-        const CreateUser = await pool.query(`
-            INSERT INTO users(socialid , name , socialauthenticated , profilepic)
-            VALUES ($1 , $2 , $3 , $4 )
-            RETURNING *
-            ` , [token.id, token.name, true, token.profile])
-        if (CreateUser.rowCount == 1) {
-            next()
-        }
-        else {
-            res.status(404).json({ message: "user is not created", success: false })
+        const result = await pool.query(
+            `
+      INSERT INTO users(socialid, name, socialauthenticated, profilepic)
+      VALUES ($1, $2, $3, $4)
+      RETURNING *`,
+            [token.id, token.name, true, token.avatar]
+        );
+
+        if (result.rowCount === 1) {
+            return result.rows[0];
+        } else {
+            throw new Error('User creation failed');
         }
     } catch (error) {
-        res.status(404).json({ message: "error while create a github user", success: "false", error: error })
+        throw new Error('Error while creating a GitHub user');
     }
-}
+};
 
-export const GenerateGithubToken = async (req, res, next) => {
+/**
+ * Generate JWT tokens for an existing GitHub user.
+ */
+export const generateGithubTokens = async (token) => {
     try {
-        const { token } = req.body;
-        const FindUser = await pool.query(`
-            SELECT * FROM users
-            WHERE socialid = $1
-            ` , [token.id])
-        const payload = { id: FindUser.rows[0].id, username: FindUser.rows[0].name  ,socialauthenticated:  FindUser.rows[0].socialauthenticated , profile :  FindUser.rows[0].profilepic , role : FindUser.rows[0].roles}
-        const AccessToken = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '2h' })
-        const RefreshToken = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '7d' })
-        res.status(200).json({ message: "user is created successfully by github login", success: true, AccessToken: AccessToken, RefreshToken: RefreshToken })
+        const result = await pool.query(
+            `SELECT * FROM users WHERE socialid = $1`,
+            [token.id]
+        );
+
+        const user = result.rows[0];
+
+        const payload = {
+            id: user.id,
+            username: user.name,
+            socialauthenticated: user.socialauthenticated,
+            profile: user.profilepic,
+            role: user.roles,
+        };
+
+        const accessToken = jwt.sign(payload, process.env.JWT_SECRET, {
+            expiresIn: '2h',
+        });
+        const refreshToken = jwt.sign(payload, process.env.JWT_SECRET, {
+            expiresIn: '7d',
+        });
+
+        return {
+            accessToken,
+            refreshToken,
+        };
     } catch (error) {
-        res.status(404).json({ message: 'Failed to generate token for github login', success: false })
+        throw new Error('Failed to generate GitHub login tokens');
     }
-}
+};
