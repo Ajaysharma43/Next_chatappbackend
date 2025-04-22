@@ -9,7 +9,7 @@ export const CheckGithubUser = async (req, res, next) => {
             WHERE socialid = $1
             `, [token.id])
         if (FindUser.rowCount == 1) {
-            const payload = { id: FindUser.rows[0].id, username: FindUser.rows[0].name }
+            const payload = { id: FindUser.rows[0].id, username: FindUser.rows[0].name , socialauthenticated:  FindUser.rows[0].socialauthenticated , profile :  FindUser.rows[0].profilepic , role : FindUser.rows[0].roles}
             const AccessToken = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '2h' })
             const RefreshToken = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '7d' })
             res.status(200).json({ message: "user is already existed", success: true, AccessToken: AccessToken, RefreshToken: RefreshToken })
@@ -49,7 +49,7 @@ export const GenerateGithubToken = async (req, res, next) => {
             SELECT * FROM users
             WHERE socialid = $1
             ` , [token.id])
-        const payload = { id: FindUser.rows[0].id, username: FindUser.rows[0].name }
+        const payload = { id: FindUser.rows[0].id, username: FindUser.rows[0].name  ,socialauthenticated:  FindUser.rows[0].socialauthenticated , profile :  FindUser.rows[0].profilepic , role : FindUser.rows[0].roles}
         const AccessToken = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '2h' })
         const RefreshToken = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '7d' })
         res.status(200).json({ message: "user is created successfully by github login", success: true, AccessToken: AccessToken, RefreshToken: RefreshToken })
