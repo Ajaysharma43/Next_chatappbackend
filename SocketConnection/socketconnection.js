@@ -13,12 +13,16 @@ let onlineUsers = new Map(); // userId -> socketId
 const Socketconnection = (io) => {
   io.on("connection", async (socket) => {
     try {
-      const chats = await RetriveChats();
-      socket.emit("GetPrevChats", { chats });
+      
       socket.emit("connection", { message: "Welcome to the server!" });
     } catch (err) {
       console.error("❌ Error sending previous chats or welcome:", err);
     }
+
+    socket.on('SendPrevGlobalMessages' , async () => {
+      const chats = await RetriveChats();
+      socket.emit("GetPrevChats", { chats });
+    })
 
     socket.on("user-online", (userId) => {
       try {

@@ -7,7 +7,6 @@ const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 export const SocialAuth = async (req, res, next) => {
     try {
         const { token } = req.body;
-
         // Verify Google token
         const ticket = await client.verifyIdToken({
             idToken: token,
@@ -76,7 +75,7 @@ export const GenerateSocialToken = async (req, res, next) => {
         const UserData = user.rows.find((item) => item.socialid === userid)
         if (UserData) {
             if (UserData.socialauthenticated == true) {
-                const payload = { id: UserData.id, role: UserData.roles, socialauthenticated: UserData.socialauthenticated };
+                const payload = { id: UserData.id, username : UserData.name ,  role: UserData.roles, socialauthenticated: UserData.socialauthenticated };
                 const AccessToken = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "2h" });
                 const RefreshToken = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "7d" });
                 res.status(200).json({
