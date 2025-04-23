@@ -98,6 +98,6 @@ export const generateGithubTokens = async (token) => {
             refreshToken,
         };
     } catch (error) {
-        throw new Error('Failed to generate GitHub login tokens');
+        console.log(error)
     }
 };
