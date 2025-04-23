@@ -62,7 +62,7 @@ export const createGithubUser = async (token) => {
             throw new Error('User creation failed');
         }
     } catch (error) {
-        throw new Error('Error while creating a GitHub user');
+        console.log(error)
     }
 };
 
