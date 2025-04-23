@@ -1,6 +1,6 @@
 import express from 'express'
 import axios from 'axios';
-import { checkGithubUser, createGithubUser, generateGithubTokens } from '../Controllers/AuthControllers/Githubauthcontrollers.js';
+import { checkGithubUser, createGithubUser, generateGithubTokens } from '../../Controllers/AuthControllers/Githubauthcontrollers.js';
 
 const Router = express.Router()
 
