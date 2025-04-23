@@ -47,7 +47,6 @@ export const checkGithubUser = async (token) => {
  */
 export const createGithubUser = async (token) => {
     try {
-        console.log(token)
         const result = await pool.query(
             `
       INSERT INTO users(socialid, name, socialauthenticated, profilepic)
