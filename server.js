@@ -43,6 +43,7 @@ app.use('/Dashboard', DashboardRoutes);
 app.use('/Chatapp', ChatAppRoutes);
 app.use('/GroupChat', GroupChatRoutes);
 
+// github login routes
 app.use('/auth' , GithubRedirect)
 app.use('/api/auth' , GithubCallback)
 
