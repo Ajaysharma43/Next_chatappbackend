@@ -12,8 +12,8 @@ import NavRoutes from './Routes/NavRoutes.js';
 import DashboardRoutes from './Routes/DashboardRoutes.js';
 import ChatAppRoutes from './Routes/AddFriendsRoutes.js';
 import GroupChatRoutes from './Routes/ChatGroupsSlice.js';
-import GithubRedirect from './SocialLogin/Gitub/GithubRedirectRoute.js'
-import GithubCallback from './SocialLogin/Gitub/GithubCallBackRoute.js'
+import GithubRedirect from './SocialLogin/Github/GithubRedirectRoute.js'
+import GithubCallback from './SocialLogin/Github/GithubCallBackRoute.js'
 
 dotenv.config();
 
