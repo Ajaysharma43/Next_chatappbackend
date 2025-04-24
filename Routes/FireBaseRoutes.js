@@ -5,6 +5,7 @@ import { AddLikedImage, CheckLike } from '../Controllers/FireBaseControllers/Ima
 import { ImageCommentController } from '../Controllers/FireBaseControllers/ImageCommentController.js';
 import { UploadProfilePic } from '../Controllers/UserProfileController.js/UploadProfilePicController.js';
 import { GetImagesData } from '../Controllers/FireBaseControllers/GetImageDataController.js';
+import { GetUsersImageData } from '../Controllers/FireBaseControllers/GetUsersImageData.js';
 
 const Router = express.Router();
 
@@ -12,6 +13,7 @@ const storage = multer.memoryStorage();
 const upload = multer({storage})
 
 Router.get('/GetImagesData' , GetImagesData)
+Router.get('/GetUserImagesData' , GetUsersImageData)
 
 Router.post('/UploadImage' , upload.single('file') , UploadImage)
 Router.post('/UpdateProfilePic' , upload.single('file') , UploadProfilePic)
