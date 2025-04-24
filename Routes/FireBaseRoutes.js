@@ -11,15 +11,15 @@ import { GetUserDetails } from '../Controllers/FireBaseControllers/GetUserDataco
 const Router = express.Router();
 
 const storage = multer.memoryStorage();
-const upload = multer({storage})
+const upload = multer({ storage })
 
-Router.get('/GetImagesData' , GetImagesData)
-Router.get('/GetUserImagesData' , GetUsersImageData)
-Router.get('/GetUserData' , GetUserDetails)
+Router.get('/GetImagesData', GetImagesData)
+Router.get('/GetUserImagesData', GetUsersImageData)
+Router.get('/GetUserData', GetUserDetails)
 
-Router.post('/UploadImage' , upload.single('file') , UploadImage)
-Router.post('/UpdateProfilePic' , upload.single('file') , UploadProfilePic)
-Router.post('/Checklikes' , CheckLike , AddLikedImage)
-Router.post('/Comment' , ImageCommentController)
+Router.post('/UploadImage', upload.single('file'), UploadImage)
+Router.post('/UpdateProfilePic', upload.single('file'), UploadProfilePic)
+Router.post('/Checklikes', CheckLike, AddLikedImage)
+Router.post('/Comment', ImageCommentController)
 
 export default Router
