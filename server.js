@@ -54,6 +54,4 @@ app.use('/api/auth' , GithubCallback)
 Socketconnection(io);
 OnlineFriends(io);
 
-server.listen(PORT, () => {
-  console.log(`Server running at http://localhost:${PORT}`);
-});
+server.listen(PORT);
