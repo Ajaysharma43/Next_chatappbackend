@@ -6,6 +6,7 @@ import { ImageCommentController } from '../Controllers/FireBaseControllers/Image
 import { UploadProfilePic } from '../Controllers/UserProfileController.js/UploadProfilePicController.js';
 import { GetImagesData } from '../Controllers/FireBaseControllers/GetImageDataController.js';
 import { GetUsersImageData } from '../Controllers/FireBaseControllers/GetUsersImageData.js';
+import { GetUserDetails } from '../Controllers/FireBaseControllers/GetUserDatacontroller.js';
 
 const Router = express.Router();
 
@@ -14,6 +15,7 @@ const upload = multer({storage})
 
 Router.get('/GetImagesData' , GetImagesData)
 Router.get('/GetUserImagesData' , GetUsersImageData)
+Router.get('/GetUserData' , GetUserDetails)
 
 Router.post('/UploadImage' , upload.single('file') , UploadImage)
 Router.post('/UpdateProfilePic' , upload.single('file') , UploadProfilePic)
