@@ -3,13 +3,18 @@ import multer from 'multer'
 import { UploadImage } from '../Controllers/FireBaseControllers/FirebaseUploadController.js';
 import { AddLikedImage, CheckLike } from '../Controllers/FireBaseControllers/ImageLikeController.js';
 import { ImageCommentController } from '../Controllers/FireBaseControllers/ImageCommentController.js';
+import { UploadProfilePic } from '../Controllers/UserProfileController.js/UploadProfilePicController.js';
+import { GetImagesData } from '../Controllers/FireBaseControllers/GetImageDataController.js';
 
 const Router = express.Router();
 
 const storage = multer.memoryStorage();
 const upload = multer({storage})
 
+Router.get('/GetImagesData' , GetImagesData)
+
 Router.post('/UploadImage' , upload.single('file') , UploadImage)
+Router.post('/UpdateProfilePic' , upload.single('file') , UploadProfilePic)
 Router.post('/Checklikes' , CheckLike , AddLikedImage)
 Router.post('/Comment' , ImageCommentController)
 

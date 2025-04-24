@@ -49,7 +49,7 @@ export const GenerateToken = async (req, res, next) => {
         if (existed) {
             await bcrypt.compare(formData.password, existed.password, (err, result) => {
                 if (result == true) {
-                    const payload = { id: existed.id, role: existed.roles , username : existed.name }
+                    const payload = { id: existed.id, role: existed.roles, username: existed.name, profile: existed.profilepic }
                     const AccessToken = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '2h' })
                     const RefreshToken = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '7d' })
                     res.status(200).json({ message: "Login successfully", AccessToken: AccessToken, RefreshToken: RefreshToken, success: true })
