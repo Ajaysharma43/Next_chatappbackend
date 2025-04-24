@@ -12,6 +12,7 @@ import NavRoutes from './Routes/NavRoutes.js';
 import DashboardRoutes from './Routes/DashboardRoutes.js';
 import ChatAppRoutes from './Routes/AddFriendsRoutes.js';
 import GroupChatRoutes from './Routes/ChatGroupsSlice.js';
+import FirebaseImageUpload from './Routes/FireBaseRoutes.js'
 import GithubRedirect from './SocialLogin/Github/GithubRedirectRoute.js'
 import GithubCallback from './SocialLogin/Github/GithubCallBackRoute.js'
 
@@ -42,6 +43,7 @@ app.use('/Nav', NavRoutes);
 app.use('/Dashboard', DashboardRoutes);
 app.use('/Chatapp', ChatAppRoutes);
 app.use('/GroupChat', GroupChatRoutes);
+app.use('/Firebase' , FirebaseImageUpload)
 
 // github login routes
 app.use('/auth' , GithubRedirect)
