@@ -10,6 +10,7 @@ export const GetImagesData = async (req, res, next) => {
             iu.name,
             iu.image_url,
             iu.created_at,
+            iu.description,
             COALESCE(l.like_count, 0) AS like_count,
             COALESCE(c.comment_count, 0) AS comment_count
             FROM Images_Uploads iu
