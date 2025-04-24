@@ -27,7 +27,6 @@ const PersonalChats = (io, socket, onlineUsers) => {
   socket.on("join-friends-room", (userId) => {
     try {
       socket.join(userId.toString());
-      console.log(`User ${userId} joined their friends room.`);
     } catch (error) {
       console.log(error)
     }
@@ -37,7 +36,6 @@ const PersonalChats = (io, socket, onlineUsers) => {
   socket.on('leave-friends-room', (userId) => {
     try {
       socket.leave(userId.toString());
-      console.log(`User ${userId} joined their friends room.`);
     } catch (error) {
       console.log(error)
     }
