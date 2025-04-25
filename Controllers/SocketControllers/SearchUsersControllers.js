@@ -10,8 +10,9 @@ export const GetAllUsers = async (req, res, next) => {
                 AND id NOT IN (
                 SELECT blocked_id FROM blockedusers WHERE blocker_id = $2
                 UNION
-                SELECT blocker_id FROM blockedusers WHERE blocked_id = $2
-);
+                SELECT blocker_id FROM blockedusers WHERE blocked_id = $2)
+                ORDER BY users.created_at ASC
+
         `, [`%${user}%`, id])
         res.status(200).json({ UserData: UserData.rows, success: true })
     } catch (error) {

@@ -1,5 +1,6 @@
 import admin from "../../FirebaseSetup/InitilizeFirebaseApp.js";
 import pool from "../../Databaseconnection/DBConnection.js";
+import jwt from 'jsonwebtoken'
 import sharp from "sharp";
 
 export const UploadProfilePic = async (req, res, next) => {
@@ -34,7 +35,10 @@ export const UploadProfilePic = async (req, res, next) => {
             `, [publicUrl, userid])
 
         if (UpdateProfilePics.rowCount == 1) {
-            res.status(200).json({ message: "user profile is successfully updated", success: true, Userdata: UpdateProfilePics.rows })
+            const payload = { id: UpdateProfilePics[0].id, role: UpdateProfilePics[0].roles, username: UpdateProfilePics[0].name, profile: UpdateProfilePics[0].profilepic , socialauthenticated: UpdateProfilePics[0].socialauthenticated, }
+            const AccessToken = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '2h' })
+            const RefreshToken = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '7d' })
+            res.status(200).json({ message: "user profile is successfully updated", success: true, Userdata: UpdateProfilePics.rows ,  AccessToken : AccessToken , RefreshToken : RefreshToken })
         }
         else {
             res.status(404).json({ message: "failed to save the profile pic", success: false })
