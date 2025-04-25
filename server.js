@@ -43,11 +43,11 @@ app.use('/Nav', NavRoutes);
 app.use('/Dashboard', DashboardRoutes);
 app.use('/Chatapp', ChatAppRoutes);
 app.use('/GroupChat', GroupChatRoutes);
-app.use('/Firebase' , FirebaseImageUpload)
+app.use('/Firebase', FirebaseImageUpload)
 
 // github login routes
-app.use('/auth' , GithubRedirect)
-app.use('/api/auth' , GithubCallback)
+app.use('/auth', GithubRedirect)
+app.use('/api/auth', GithubCallback)
 
 
 // === Socket.IO Setup ===
