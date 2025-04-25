@@ -6,7 +6,6 @@ export const UploadProfilePic = async (req, res, next) => {
     try {
         const file = req.file;
         const { userid } = req.body;
-
         if (!file) {
             return res.status(404).json({ message: "data not found to upload", success: false });
         }
