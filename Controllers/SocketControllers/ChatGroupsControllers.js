@@ -117,7 +117,8 @@ export const GetMembersDetails = async (id) => {
             group_members.group_id,
             group_members.joined_at,
             group_members.role,
-            users.name
+            users.name,
+            users.profilepic
             FROM group_members
             INNER JOIN users ON users.id = group_members.user_id
             WHERE group_id = $1

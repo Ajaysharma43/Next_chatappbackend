@@ -25,6 +25,7 @@ export const PreviousGroupChat = async (id) => {
         const res = await pool.query(`
             SELECT  
             users.name,
+            users.profilepic,
             group_messages.id, 
             group_messages.group_id, 
             group_messages.sender_id, 
