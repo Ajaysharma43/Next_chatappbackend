@@ -57,29 +57,38 @@ export const GetUserDetails = async (req, res, next) => {
                 WHERE friends.receiver_id = $1
                 ` , [userid])
 
-                const UserImagesUploadData = await pool.query(`
+        const UserImagesUploadData = await pool.query(`
                 SELECT 
                 iu.id AS image_id,
                 iu.name,
                 iu.image_url,
                 iu.created_at,
                 COALESCE(l.like_count, 0) AS like_count,
-                COALESCE(c.comment_count, 0) AS comment_count
-                FROM images_uploads iu
-                LEFT JOIN (
+                COALESCE(c.comment_count, 0) AS comment_count,
+                CASE 
+                    WHEN ul.image_id IS NOT NULL THEN true
+                    ELSE false
+                END AS is_liked_by_user
+            FROM images_uploads iu
+            LEFT JOIN (
                 SELECT image_id, COUNT(*) AS like_count
                 FROM image_likes
                 GROUP BY image_id
-                ) l ON l.image_id = iu.id
-                LEFT JOIN (
+            ) l ON l.image_id = iu.id
+            LEFT JOIN (
                 SELECT image_id, COUNT(*) AS comment_count
                 FROM image_comments
                 GROUP BY image_id
-                ) c ON c.image_id = iu.id
-                WHERE iu.user_id = $1
-                ORDER BY iu.created_at DESC;
-                    `,[userid])
-                res.status(200).json({message : "user data is successfully fetched" , success : true , UserDetails : UserDetails.rows , UserFollowerData : UserFollowerData.rows , UserFollowingData : UserFollowingData.rows , UserImagesUploadData : UserImagesUploadData.rows})
+            ) c ON c.image_id = iu.id
+            LEFT JOIN (
+                SELECT image_id
+                FROM image_likes
+                WHERE user_id = $1  -- <-- your current user's ID
+            ) ul ON ul.image_id = iu.id
+            WHERE iu.user_id = $1
+            ORDER BY iu.created_at DESC;
+                    `, [userid])
+        res.status(200).json({ message: "user data is successfully fetched", success: true, UserDetails: UserDetails.rows, UserFollowerData: UserFollowerData.rows, UserFollowingData: UserFollowingData.rows, UserImagesUploadData: UserImagesUploadData.rows })
     } catch (error) {
         res.status(404).json({ message: "error while getting the user details", success: false, error: error })
     }
