@@ -8,6 +8,7 @@ import { GetImagesData } from '../Controllers/FireBaseControllers/GetImageDataCo
 import { GetUsersImageData } from '../Controllers/FireBaseControllers/GetUsersImageData.js';
 import { GetUserDetails } from '../Controllers/FireBaseControllers/GetUserDatacontroller.js';
 import { GetComments } from '../Controllers/FireBaseControllers/GetCommentsControllers.js';
+import { DeleteComment } from '../Controllers/FireBaseControllers/DeleteCommentController.js';
 
 const Router = express.Router();
 
@@ -23,5 +24,7 @@ Router.post('/UploadImage', upload.single('file'), UploadImage)
 Router.post('/UpdateProfilePic', upload.single('file'), UploadProfilePic)
 Router.post('/Checklikes', CheckLike, AddLikedImage)
 Router.post('/Comment', ImageCommentController)
+
+Router.delete('/DeleteComment' , DeleteComment)
 
 export default Router
