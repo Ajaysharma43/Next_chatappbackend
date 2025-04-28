@@ -18,13 +18,13 @@ const upload = multer({ storage })
 Router.get('/GetImagesData', GetImagesData)
 Router.get('/GetUserImagesData', GetUsersImageData)
 Router.get('/GetUserData', GetUserDetails)
-Router.get('/GetComments' , GetComments)
+Router.get('/GetComments', GetComments)
 
 Router.post('/UploadImage', upload.single('file'), UploadImage)
 Router.post('/UpdateProfilePic', upload.single('file'), UploadProfilePic)
 Router.post('/Checklikes', CheckLike, AddLikedImage)
 Router.post('/Comment', ImageCommentController)
 
-Router.delete('/DeleteComment' , DeleteComment)
+Router.delete('/DeleteComment', DeleteComment)
 
 export default Router
