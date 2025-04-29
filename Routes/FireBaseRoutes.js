@@ -9,6 +9,7 @@ import { GetUsersImageData } from '../Controllers/FireBaseControllers/GetUsersIm
 import { GetUserDetails } from '../Controllers/FireBaseControllers/GetUserDatacontroller.js';
 import { GetComments } from '../Controllers/FireBaseControllers/GetCommentsControllers.js';
 import { DeleteComment } from '../Controllers/FireBaseControllers/DeleteCommentController.js';
+import { GetFriendsPosts } from '../Controllers/FireBaseControllers/FriendsPostsController.js';
 
 const Router = express.Router();
 
@@ -19,6 +20,7 @@ Router.get('/GetImagesData', GetImagesData)
 Router.get('/GetUserImagesData', GetUsersImageData)
 Router.get('/GetUserData', GetUserDetails)
 Router.get('/GetComments', GetComments)
+Router.get('/GetFriendsPosts' , GetFriendsPosts)
 
 Router.post('/UploadImage', upload.single('file'), UploadImage)
 Router.post('/UpdateProfilePic', upload.single('file'), UploadProfilePic)
