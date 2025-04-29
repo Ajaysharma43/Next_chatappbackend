@@ -32,9 +32,9 @@ export const GetFriendsPosts = async (req, res, next) => {
             AND iu.user_id != $1
 
             GROUP BY iu.id, users.id, users.profilepic ,ul.image_id
-            ORDER BY iu.id DESC;`,[userid])
-            res.status(200).json({message : "friends posts is successfully fetched" , success : true , FriendsPosts : FriendsPosts.rows})
+            ORDER BY iu.id DESC;`, [userid])
+        res.status(200).json({ message: "friends posts is successfully fetched", success: true, FriendsPosts: FriendsPosts.rows })
     } catch (error) {
-        res.status(404).json({ message: "error while fetching the user friends posts" , success : false , error  : error})
+        res.status(404).json({ message: "error while fetching the user friends posts", success: false, error: error })
     }
 }
