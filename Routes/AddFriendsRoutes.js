@@ -13,6 +13,10 @@ const route = express.Router()
 
 // the routes are to handle the requests for addfriend , send friend request , decline or accept request etc.
 
+route.get('/GetSingleUser', GetSingleUser)
+route.get('/GetRequests', GetRequestController)
+route.get('/GetBlockedFriends', GetBlockUsers)
+
 route.post('/SendRequest', CheckFriends, CheckRequest, SendRequest)
 route.post('/AcceptRequest', CheckFriendRequest, AcceptFriendRequest, DeleteFriendRequest)
 route.post('/DeclineRequest', DeleteUser)
@@ -20,10 +24,6 @@ route.post('/SearchUsers', GetAllUsers)
 route.post('/CheckFriends', Friends)
 route.post('/UnreadMessages', UnreadMessages)
 route.post('/DeleteFriend', DeleteFriend, Friends)
-
-route.get('/GetSingleUser', GetSingleUser)
-route.get('/GetRequests', GetRequestController)
-route.get('/GetBlockedFriends', GetBlockUsers)
 
 
 export default route;
