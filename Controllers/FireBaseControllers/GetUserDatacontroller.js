@@ -62,6 +62,7 @@ export const GetUserDetails = async (req, res, next) => {
                 iu.id AS image_id,
                 iu.name,
                 iu.image_url,
+                iu.description,
                 iu.created_at,
                 COALESCE(l.like_count, 0) AS like_count,
                 COALESCE(c.comment_count, 0) AS comment_count,
