@@ -8,11 +8,13 @@ const Route = express.Router()
 
 // these routes are for the Dashboard apis
 
-Route.get('/GetData' , GetUsers)
-Route.post('/Update' , FindUser , UpdateUser)
-Route.delete('/Delete' , DeleteUser)
-Route.post('/CreateUser' , AddUser)
-Route.post('/SortData' , SortData)
-Route.post('/Search' , SearchData)
-Route.post('/SearchSortData' , SearchSortedData)
+Route.get('/GetData', GetUsers)
+
+Route.post('/Update', FindUser, UpdateUser)
+Route.post('/CreateUser', AddUser)
+Route.post('/SortData', SortData)
+Route.post('/Search', SearchData)
+Route.post('/SearchSortData', SearchSortedData)
+
+Route.delete('/Delete', DeleteUser)
 export default Route;
