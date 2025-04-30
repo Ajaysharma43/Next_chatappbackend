@@ -10,6 +10,7 @@ import { GetUserDetails } from '../Controllers/FireBaseControllers/GetUserDataco
 import { GetComments } from '../Controllers/FireBaseControllers/GetCommentsControllers.js';
 import { DeleteComment } from '../Controllers/FireBaseControllers/DeleteCommentController.js';
 import { GetFriendsPosts } from '../Controllers/FireBaseControllers/FriendsPostsController.js';
+import { DeletePost } from '../Controllers/FireBaseControllers/DeletePostControllers.js';
 
 const Router = express.Router();
 
@@ -28,5 +29,6 @@ Router.post('/Checklikes', CheckLike, AddLikedImage)
 Router.post('/Comment', ImageCommentController)
 
 Router.delete('/DeleteComment', DeleteComment)
+Router.delete('/DeletePost' , DeletePost)
 
 export default Router
