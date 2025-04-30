@@ -32,7 +32,7 @@ export const DeletePost = async (req, res) => {
             WHERE id = $1
             ` , [imageid])
 
-        res.status(200).json({ message: "File deleted successfully", success: true });
+        res.status(200).json({ message: "File deleted successfully", success: true , imageid : imageid });
 
     } catch (error) {
         console.error("Error deleting post:", error);
