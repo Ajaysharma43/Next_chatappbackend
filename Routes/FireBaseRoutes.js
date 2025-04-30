@@ -11,6 +11,7 @@ import { GetComments } from '../Controllers/FireBaseControllers/GetCommentsContr
 import { DeleteComment } from '../Controllers/FireBaseControllers/DeleteCommentController.js';
 import { GetFriendsPosts } from '../Controllers/FireBaseControllers/FriendsPostsController.js';
 import { DeletePost } from '../Controllers/FireBaseControllers/DeletePostControllers.js';
+import { CheckHiddenStatus, HideImage } from '../Controllers/FireBaseControllers/HidePostController.js';
 
 const Router = express.Router();
 
@@ -27,6 +28,7 @@ Router.post('/UploadImage', upload.single('file'), UploadImage)
 Router.post('/UpdateProfilePic', upload.single('file'), UploadProfilePic)
 Router.post('/Checklikes', CheckLike, AddLikedImage)
 Router.post('/Comment', ImageCommentController)
+Router.post('/HidePost' , CheckHiddenStatus , HideImage)
 
 Router.delete('/DeleteComment', DeleteComment)
 Router.delete('/DeletePost' , DeletePost)

@@ -64,6 +64,7 @@ export const GetUserDetails = async (req, res, next) => {
                 iu.image_url,
                 iu.description,
                 iu.created_at,
+                iu.hidden,
                 COALESCE(l.like_count, 0) AS like_count,
                 COALESCE(c.comment_count, 0) AS comment_count,
                 CASE 
@@ -86,9 +87,10 @@ export const GetUserDetails = async (req, res, next) => {
                 FROM image_likes
                 WHERE user_id = $1  -- <-- your current user's ID
             ) ul ON ul.image_id = iu.id
-            WHERE iu.user_id = $1
+            WHERE iu.user_id = $1 AND iu.hidden = $2
             ORDER BY iu.created_at DESC;
-                    `, [userid])
+                    `, [userid , false])
+
         res.status(200).json({ message: "user data is successfully fetched", success: true, UserDetails: UserDetails.rows, UserFollowerData: UserFollowerData.rows, UserFollowingData: UserFollowingData.rows, UserImagesUploadData: UserImagesUploadData.rows })
     } catch (error) {
         res.status(404).json({ message: "error while getting the user details", success: false, error: error })
