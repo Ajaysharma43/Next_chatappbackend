@@ -26,14 +26,97 @@ export const GetSingleUser = async (req, res) => {
 
         // ✅ Skip if either user blocked the other
         const userQuery = await pool.query(`
-                SELECT * FROM users
-                WHERE id = $1
-                AND id NOT IN (
-                SELECT blocked_id FROM blockedusers WHERE blocker_id = $2
-                UNION
-                SELECT blocker_id FROM blockedusers WHERE blocked_id = $2
-            )
+                        SELECT 
+            u.id AS user_id,
+            u.name,
+            u.profilepic,
+            COALESCE(p.post_count, 0) AS post_count,
+            COALESCE(followers.follower_count, 0) AS followers_count,
+            COALESCE(following.following_count, 0) AS following_count
+        FROM users u
+        LEFT JOIN (
+            SELECT user_id, COUNT(*) AS post_count
+            FROM images_uploads
+            GROUP BY user_id
+        ) p ON p.user_id = u.id
+        LEFT JOIN (
+            SELECT receiver_id AS user_id, COUNT(*) AS follower_count
+            FROM friends
+            GROUP BY receiver_id
+        ) followers ON followers.user_id = u.id
+        LEFT JOIN (
+            SELECT sender_id AS user_id, COUNT(*) AS following_count
+            FROM friends
+            GROUP BY sender_id
+        ) following ON following.user_id = u.id
+        WHERE u.id = $1
+        AND u.id NOT IN (
+            SELECT blocked_id FROM blockedusers WHERE blocker_id = $2
+            UNION
+            SELECT blocker_id FROM blockedusers WHERE blocked_id = $2
+        );
         `, [parseInt(userid), parseInt(currentUserId)]);
+
+        const UserImagesUploadData = await pool.query(`
+            SELECT 
+            iu.id AS image_id,
+            iu.name,
+            iu.image_url,
+            iu.description,
+            iu.created_at,
+            iu.hidden,
+            COALESCE(l.like_count, 0) AS like_count,
+            COALESCE(c.comment_count, 0) AS comment_count,
+            CASE 
+                WHEN ul.image_id IS NOT NULL THEN true
+                ELSE false
+            END AS is_liked_by_user
+        FROM images_uploads iu
+        LEFT JOIN (
+            SELECT image_id, COUNT(*) AS like_count
+            FROM image_likes
+            GROUP BY image_id
+        ) l ON l.image_id = iu.id
+        LEFT JOIN (
+            SELECT image_id, COUNT(*) AS comment_count
+            FROM image_comments
+            GROUP BY image_id
+        ) c ON c.image_id = iu.id
+        LEFT JOIN (
+            SELECT image_id
+            FROM image_likes
+            WHERE user_id = $1  -- <-- your current user's ID
+        ) ul ON ul.image_id = iu.id
+        WHERE iu.user_id = $1 AND iu.hidden = $2
+        ORDER BY iu.created_at DESC;
+                `, [userid, false])
+
+        const UserFollowingData = await pool.query(`
+                                SELECT 
+                                friends.id,
+                                friends.sender_id,
+                                friends.receiver_id,
+                                friends.created_at,
+                                users.id,
+                                users.name,
+                                users.profilepic
+                                FROM friends
+                                INNER JOIN users ON users.id = receiver_id
+                                WHERE friends.sender_id = $1
+                                ` , [userid])
+        const UserFollowerData = await pool.query(`
+                                SELECT 
+                                friends.id,
+                                friends.sender_id,
+                                friends.receiver_id,
+                                friends.created_at,
+                                users.id,
+                                users.name,
+                                users.profilepic
+                                FROM friends
+                                INNER JOIN users ON users.id = sender_id
+                                WHERE friends.receiver_id = $1
+                                ` , [userid])
 
         if (userQuery.rowCount === 0) {
             return res.status(404).json({ message: "User not found or blocked", success: false });
@@ -67,6 +150,9 @@ export const GetSingleUser = async (req, res) => {
         res.status(200).json({
             sender: requestQuery.rows[0] || null,
             user: userQuery.rows[0],
+            UserImagesUploadData: UserImagesUploadData.rows,
+            UserFollowerData : UserFollowerData.rows,
+            UserFollowingData : UserFollowingData.rows,
             relationshipStatus,
             relation,
             success: true
