@@ -9,7 +9,7 @@ export const GetRequestController = async (req, res, next) => {
             requests.sender_id,
             requests.receiver_id,
             requests.created_at,
-            users.id,
+            users.id, 
             users.name,
             users.profilepic 
             FROM requests
