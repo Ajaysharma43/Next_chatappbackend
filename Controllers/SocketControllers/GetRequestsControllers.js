@@ -4,12 +4,29 @@ export const GetRequestController = async (req, res, next) => {
     try {
         const { senderid } = req.query;
         const SendRequests = await pool.query(`
-            SELECT * FROM requests
-            WHERE sender_id = $1
+            SELECT 
+            requests.id,
+            requests.sender_id,
+            requests.receiver_id,
+            requests.created_at,
+            users.id,
+            users.name,
+            users.profilepic 
+            FROM requests
+            INNER JOIN users ON users.id = requests.sender_id
+            WHERE requests.sender_id = $1
             `, [senderid])
-
         const ReciveRequests = await pool.query(`
-                SELECT * FROM requests
+            SELECT 
+            requests.id,
+            requests.sender_id,
+            requests.receiver_id,
+            requests.created_at,
+            users.id,
+            users.name,
+            users.profilepic 
+            FROM requests
+            INNER JOIN users ON users.id = requests.receiver_id
             WHERE receiver_id = $1
                 `, [senderid])
         res.status(200).json({ SendRequests: SendRequests.rows, ReciveRequests: ReciveRequests.rows, success: true })

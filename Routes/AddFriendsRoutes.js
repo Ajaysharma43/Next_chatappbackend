@@ -1,7 +1,7 @@
 import express from 'express'
 import { CheckFriends, CheckRequest, SendRequest } from '../Controllers/SocketControllers/AddFriendRequestControllers.js';
 import { AcceptFriendRequest, CheckFriendRequest, DeleteFriendRequest } from '../Controllers/SocketControllers/AcceptRequestControllers.js';
-import { GetAllUsers, GetSingleUser } from '../Controllers/SocketControllers/SearchUsersControllers.js';
+import { GetAllUsers, GetSingleUser, GetUserPostsData, UserFollowerAndFollowingData } from '../Controllers/SocketControllers/SearchUsersControllers.js';
 import { DeleteUser } from '../Controllers/SocketControllers/DeclineRequestControllers.js';
 import { GetRequestController } from '../Controllers/SocketControllers/GetRequestsControllers.js';
 import { Friends } from '../Controllers/SocketControllers/FriendsControllers.js';
@@ -14,6 +14,8 @@ const route = express.Router()
 // the routes are to handle the requests for addfriend , send friend request , decline or accept request etc.
 
 route.get('/GetSingleUser', GetSingleUser)
+route.get('/GetFollowersAndFollowingData' , UserFollowerAndFollowingData)
+route.get('/GetUserPostsData' , GetUserPostsData)
 route.get('/GetRequests', GetRequestController)
 route.get('/GetBlockedFriends', GetBlockUsers)
 
